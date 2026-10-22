@@ -101,12 +101,10 @@
       </div>
 
       <div class="flex items-center space-x-3">
-        <!-- Supabase Settings Button -->
         <button onclick="openConfigModal()" title="Supabase Database Settings" class="p-2 rounded-lg bg-mustangNavy-800 text-slate-300 hover:text-mustangGold-400 hover:bg-mustangNavy-700 text-xs">
           <i class="fa-solid fa-database"></i>
         </button>
 
-        <!-- Notification Bell -->
         <div class="relative">
           <button onclick="toggleNotificationPanel()" class="relative p-2 rounded-lg bg-mustangNavy-800 text-slate-300 hover:text-mustangGold-400 hover:bg-mustangNavy-700 text-xs">
             <i class="fa-solid fa-bell text-sm"></i>
@@ -122,14 +120,12 @@
           </div>
         </div>
 
-        <!-- Current User Badge -->
         <div id="currentUserBadge" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-mustangNavy-800 border border-slate-700 text-xs">
           <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
           <span id="activeUserName" class="font-medium text-parchment-100">Guest</span>
           <span id="activeUserRoleBadge" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-mustangGold-500/20 text-mustangGold-400 border border-mustangGold-500/30 uppercase font-mono">Unregistered</span>
         </div>
 
-        <!-- Auth Action Button -->
         <button id="authActionBtn" onclick="openLoginModal()" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-mustangGold-500 text-mustangNavy-950 hover:bg-mustangGold-400 transition shadow">
           <span id="authBtnLabel">Sign In</span>
         </button>
@@ -183,7 +179,7 @@
   <!-- MAIN APP CONTAINER -->
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-    <!-- INITIALIZATION ALERT (IF NO SPONSOR IN SUPABASE) -->
+    <!-- INITIALIZATION ALERT -->
     <div id="initWizardContainer" class="hidden mb-6">
       <div class="clean-card rounded-2xl p-6 border-2 border-mustangGold-500 bg-gradient-to-br from-white via-parchment-50 to-mustangGold-50">
         <div class="max-w-2xl">
@@ -271,7 +267,6 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Draft Form -->
         <div class="lg:col-span-5 clean-card p-5 rounded-2xl">
           <h3 class="font-serif font-bold text-base text-mustangNavy-900 pb-3 border-b border-parchment-200 mb-4">
             <i class="fa-solid fa-feather text-mustangGold-600 mr-1.5"></i> Submit New Manuscript
@@ -320,7 +315,6 @@
           </form>
         </div>
 
-        <!-- Drafts Feed -->
         <div class="lg:col-span-7 space-y-4">
           <div class="flex items-center justify-between">
             <h3 class="font-serif font-bold text-lg text-mustangNavy-900">Cloud Submissions Queue</h3>
@@ -408,7 +402,6 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-        <!-- Sales Quota Calculator -->
         <div class="md:col-span-6 clean-card p-6 rounded-2xl flex flex-col justify-between">
           <div>
             <h3 class="font-serif font-bold text-base text-mustangNavy-900 mb-2">
@@ -449,7 +442,6 @@
           </div>
         </div>
 
-        <!-- Treasury Ledger -->
         <div class="md:col-span-6 clean-card p-6 rounded-2xl flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between pb-3 border-b border-parchment-200 mb-3">
@@ -543,6 +535,23 @@
       </div>
 
       <div id="boardroomUnlockedView" class="hidden space-y-6">
+        
+        <!-- MEETING DAY ATTENDANCE PROMPT BANNER -->
+        <div id="attendancePromptBanner" class="hidden p-4 rounded-xl border border-amber-300 bg-amber-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-amber-900 shadow-sm">
+          <div class="flex items-center space-x-3">
+            <span class="w-9 h-9 rounded-lg bg-amber-200 text-amber-900 flex items-center justify-center text-base font-bold">
+              <i class="fa-solid fa-calendar-check"></i>
+            </span>
+            <div>
+              <div class="font-bold text-xs" id="attPromptTitle">Official Club Meeting Today!</div>
+              <p class="text-[11px] text-amber-800">Roll call has not been recorded yet. Take attendance for today's gathering.</p>
+            </div>
+          </div>
+          <button onclick="switchLeadershipSubDesk('attendance')" class="px-3.5 py-1.5 rounded-lg bg-mustangNavy-900 text-mustangGold-400 text-xs font-bold shadow hover:bg-mustangNavy-800 transition whitespace-nowrap">
+            Take Attendance Now &rarr;
+          </button>
+        </div>
+
         <div class="bg-mustangNavy-900 text-white rounded-2xl p-5 border border-slate-800 flex flex-wrap items-center justify-between gap-4">
           <div>
             <div class="flex items-center space-x-2">
@@ -554,7 +563,10 @@
 
           <div class="flex flex-wrap items-center gap-1.5 text-xs">
             <button onclick="switchLeadershipSubDesk('roster')" data-subdesk="roster" class="subdesk-btn px-3 py-1.5 rounded-lg bg-mustangGold-600 text-mustangNavy-950 font-bold">Roster & Accounts</button>
-            <button onclick="switchLeadershipSubDesk('editor')" data-subdesk="editor" class="subdesk-btn px-3 py-1.5 rounded-lg bg-mustangNavy-800 text-slate-300">Editor Review Queue</button>
+            <button onclick="switchLeadershipSubDesk('attendance')" data-subdesk="attendance" class="subdesk-btn px-3 py-1.5 rounded-lg bg-mustangNavy-800 text-slate-300 font-medium hover:bg-mustangNavy-700 transition">
+              <i class="fa-solid fa-clipboard-user mr-1"></i> Attendance Tracker
+            </button>
+            <button onclick="switchLeadershipSubDesk('editor')" data-subdesk="editor" class="subdesk-btn px-3 py-1.5 rounded-lg bg-mustangNavy-800 text-slate-300">Editor Queue</button>
             <button onclick="switchLeadershipSubDesk('treasurer')" data-subdesk="treasurer" class="subdesk-btn px-3 py-1.5 rounded-lg bg-mustangNavy-800 text-slate-300">Treasurer Vault</button>
             <button onclick="switchLeadershipSubDesk('historian')" data-subdesk="historian" class="subdesk-btn px-3 py-1.5 rounded-lg bg-mustangNavy-800 text-slate-300">Historian Log</button>
           </div>
@@ -619,7 +631,93 @@
           </div>
         </div>
 
-        <!-- SUBDESK 2: EDITOR DESK -->
+        <!-- SUBDESK 2: ATTENDANCE TRACKER (NEW) -->
+        <div id="subdesk-attendance" class="subdesk-content hidden space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Attendance Recording Form (Col 6) -->
+            <div class="lg:col-span-6 clean-card p-5 rounded-2xl space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-parchment-200">
+                <div class="flex items-center space-x-2">
+                  <i class="fa-solid fa-clipboard-user text-mustangGold-600 text-lg"></i>
+                  <div>
+                    <h4 class="font-serif font-bold text-base text-mustangNavy-900">Take Meeting Roll Call</h4>
+                    <p class="text-[11px] text-slate-500">Log present club members and new walk-in students</p>
+                  </div>
+                </div>
+                <span class="text-xs font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200" id="attPresentCountBadge">0 Present</span>
+              </div>
+
+              <form onsubmit="handleSaveAttendance(event)" class="space-y-4 text-xs">
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block font-medium text-slate-700 mb-1">Meeting Date *</label>
+                    <input type="date" id="attDate" required onchange="onAttendanceDateChanged()" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+                  </div>
+                  <div>
+                    <label class="block font-medium text-slate-700 mb-1">Meeting Description / Topic *</label>
+                    <input type="text" id="attMeetingTitle" required placeholder="e.g. Regular Thursday Meeting / Anthology Workshop" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+                  </div>
+                </div>
+
+                <!-- Member Checklist -->
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <label class="font-bold text-slate-800">Current Enrolled Members Checklist</label>
+                    <div class="space-x-2 text-[11px]">
+                      <button type="button" onclick="toggleSelectAllMembers(true)" class="text-mustangGold-700 hover:underline">Select All</button>
+                      <span class="text-slate-300">|</span>
+                      <button type="button" onclick="toggleSelectAllMembers(false)" class="text-slate-500 hover:underline">Clear</button>
+                    </div>
+                  </div>
+
+                  <div id="attendanceMemberChecklist" class="max-h-60 overflow-y-auto space-y-1.5 p-2.5 bg-parchment-50 rounded-xl border border-parchment-300">
+                    <!-- Populated via JS -->
+                  </div>
+                </div>
+
+                <!-- Walk-in Guests / New Attendees -->
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="font-bold text-slate-800">New Attendees / Walk-In Guests</label>
+                    <span class="text-[10px] text-slate-400">Comma-separated</span>
+                  </div>
+                  <input type="text" id="attGuestNames" placeholder="e.g. Jordan Smith, Marcus Lee" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+                  <div class="mt-1 flex items-center space-x-1.5">
+                    <input type="checkbox" id="attAutoEnrollGuests" class="rounded accent-mustangGold-600">
+                    <label for="attAutoEnrollGuests" class="text-[11px] text-slate-600">Automatically add walk-ins to the club roster as active members</label>
+                  </div>
+                </div>
+
+                <!-- Notes -->
+                <div>
+                  <label class="block font-medium text-slate-700 mb-1">Meeting Notes / Absences / Remarks</label>
+                  <textarea id="attNotes" rows="2" placeholder="Optional notes regarding excuses or announcements..." class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 rounded-lg font-bold bg-mustangNavy-900 text-mustangGold-400 hover:bg-mustangNavy-800 shadow flex items-center justify-center space-x-2">
+                  <i class="fa-solid fa-check-double"></i>
+                  <span>Commit Attendance Record to Cloud</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Attendance History / Past Records (Col 6) -->
+            <div class="lg:col-span-6 clean-card p-5 rounded-2xl space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-parchment-200">
+                <h4 class="font-serif font-bold text-base text-mustangNavy-900">Attendance Archives</h4>
+                <span class="text-xs font-mono text-slate-500" id="attRecordCountLabel">0 meetings recorded</span>
+              </div>
+
+              <div id="attendanceHistoryFeed" class="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SUBDESK 3: EDITOR DESK -->
         <div id="subdesk-editor" class="subdesk-content hidden space-y-6">
           <div class="clean-card p-6 rounded-2xl">
             <h4 class="font-serif font-bold text-lg text-mustangNavy-900 pb-3 border-b border-parchment-200 mb-4">Chief Editor Manuscript Review Desk</h4>
@@ -640,7 +738,7 @@
           </div>
         </div>
 
-        <!-- SUBDESK 3: TREASURER -->
+        <!-- SUBDESK 4: TREASURER -->
         <div id="subdesk-treasurer" class="subdesk-content hidden space-y-6">
           <div class="clean-card p-6 rounded-2xl">
             <div class="flex items-center justify-between pb-3 border-b border-parchment-200 mb-4">
@@ -663,7 +761,7 @@
           </div>
         </div>
 
-        <!-- SUBDESK 4: HISTORIAN -->
+        <!-- SUBDESK 5: HISTORIAN -->
         <div id="subdesk-historian" class="subdesk-content hidden space-y-6">
           <div class="clean-card p-6 rounded-2xl">
             <div class="flex items-center justify-between pb-3 border-b border-parchment-200 mb-4">
@@ -692,7 +790,7 @@
         </div>
         <div>
           <label class="block font-medium text-slate-700 mb-1">Anon / Public API Key *</label>
-          <input type="password" id="cfgKey" required placeholder="eyJhbGciOiJIUzI1NiIsIn..." class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg font-mono">
+          <input type="password" id="cfgKey" required placeholder="sb_publishable_... or ey..." class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg font-mono">
         </div>
         <button type="submit" class="w-full py-2.5 rounded-lg font-bold bg-mustangNavy-900 text-mustangGold-400 hover:bg-mustangNavy-800 shadow">
           Connect to Supabase
@@ -901,7 +999,7 @@
     </div>
   </div>
 
-  <!-- HISTORIAN MODAL (PROMPTS + ATTACHMENTS) -->
+  <!-- HISTORIAN MODAL -->
   <div id="modalHistorianMilestone" class="fixed inset-0 bg-mustangNavy-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="clean-card rounded-2xl max-w-xl w-full p-6 bg-white shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-3 border-b border-parchment-200">
@@ -989,7 +1087,6 @@
        CORE SUPABASE INTEGRATION & LOGIC
   =============================================== -->
   <script>
-    // HARDCODED SUPABASE KEYS (Or entered via settings modal)
     let SUPABASE_URL = "https://duovnszctabxrftxoecw.supabase.co/";
     let SUPABASE_KEY = "sb_publishable_zqNjNcbWV1OzxBbOLQ1CRw_OCwYqfqT";
     let sbClient = null;
@@ -1005,13 +1102,19 @@
       messages: [],
       milestones: [],
       notifications: [],
+      attendance: [],
       goal: 3500
     };
+
+    function cleanSupabaseUrl(url) {
+      if (!url) return "";
+      return url.trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
+    }
 
     function initSupabase() {
       if (SUPABASE_URL && SUPABASE_KEY) {
         try {
-          sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+          sbClient = window.supabase.createClient(cleanSupabaseUrl(SUPABASE_URL), SUPABASE_KEY);
           document.getElementById('cloudStatusBadge').innerHTML = `
             <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
             <span class="text-emerald-400">Cloud Live</span>
@@ -1033,7 +1136,7 @@
     async function fetchCloudData() {
       if (!sbClient) return;
 
-      const [profiles, ann, cal, notes, drafts, ledger, msgs, stones, notifs, settings] = await Promise.all([
+      const [profiles, ann, cal, notes, drafts, ledger, msgs, stones, notifs, att, settings] = await Promise.all([
         sbClient.from('profiles').select('*'),
         sbClient.from('announcements').select('*').order('created_at', { ascending: false }),
         sbClient.from('calendar_events').select('*').order('date', { ascending: true }),
@@ -1043,6 +1146,7 @@
         sbClient.from('messages').select('*').order('created_at', { ascending: false }),
         sbClient.from('milestones').select('*').order('created_at', { ascending: false }),
         sbClient.from('notifications').select('*').order('created_at', { ascending: false }),
+        sbClient.from('attendance_records').select('*').order('date', { ascending: false }),
         sbClient.from('club_settings').select('*')
       ]);
 
@@ -1055,6 +1159,7 @@
       CACHE.messages = msgs.data || [];
       CACHE.milestones = stones.data || [];
       CACHE.notifications = notifs.data || [];
+      CACHE.attendance = att.data || [];
 
       const goalSetting = (settings.data || []).find(s => s.key === 'trip_goal');
       if (goalSetting && goalSetting.value) CACHE.goal = goalSetting.value.amount || 3500;
@@ -1077,13 +1182,11 @@
     }
 
     function updateUI() {
-      // Sponsor Existence Check
       const sponsor = CACHE.users.find(u => u.role === 'Teacher Sponsor');
       const wizard = document.getElementById('initWizardContainer');
       if (!sponsor) wizard.classList.remove('hidden');
       else wizard.classList.add('hidden');
 
-      // Auth controls
       const isLeader = isLeadershipOrSponsor(CURRENT_USER);
       ['btnNewAnnouncement', 'btnNewCalendarEvent', 'btnNewMeetingNotes', 'btnLogSale', 'btnSetBudgetGoal'].forEach(id => {
         const el = document.getElementById(id);
@@ -1105,6 +1208,7 @@
         document.getElementById('logoutOptionSection').classList.add('hidden');
       }
 
+      checkMeetingDayPrompt();
       renderMetrics();
       renderAnnouncements();
       renderCalendar();
@@ -1113,8 +1217,40 @@
       renderTreasury();
       renderMessages();
       renderRoster();
+      renderAttendance();
       renderHistorian();
       renderNotifications();
+    }
+
+    // MEETING DAY ATTENDANCE ALERT LOGIC
+    function checkMeetingDayPrompt() {
+      const banner = document.getElementById('attendancePromptBanner');
+      if (!banner) return;
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      const todayMeeting = CACHE.calendarEvents.find(e => e.date === todayStr);
+      const alreadyTaken = CACHE.attendance.some(a => a.date === todayStr);
+
+      if (todayMeeting && !alreadyTaken) {
+        document.getElementById('attPromptTitle').innerText = `Official Meeting Today: "${todayMeeting.title}"!`;
+        banner.classList.remove('hidden');
+        
+        // Auto-fill today's values on the attendance form
+        const dateInput = document.getElementById('attDate');
+        const titleInput = document.getElementById('attMeetingTitle');
+        if (dateInput && !dateInput.value) dateInput.value = todayStr;
+        if (titleInput && !titleInput.value) titleInput.value = todayMeeting.title;
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function onAttendanceDateChanged() {
+      const selectedDate = document.getElementById('attDate').value;
+      const meeting = CACHE.calendarEvents.find(e => e.date === selectedDate);
+      if (meeting) {
+        document.getElementById('attMeetingTitle').value = meeting.title;
+      }
     }
 
     // TAB NAVIGATION
@@ -1150,7 +1286,6 @@
       document.getElementById('navLinks').classList.toggle('hidden');
     }
 
-    // SUBDESK
     function switchLeadershipSubDesk(desk) {
       document.querySelectorAll('.subdesk-content').forEach(d => d.classList.add('hidden'));
       document.querySelectorAll('.subdesk-btn').forEach(b => {
@@ -1162,6 +1297,22 @@
       });
       const active = document.getElementById(`subdesk-${desk}`);
       if (active) active.classList.remove('hidden');
+
+      const titles = {
+        roster: "Roster & Accounts",
+        attendance: "Attendance Tracker & Roll Call",
+        editor: "Chief Editor Review Desk",
+        treasurer: "Treasurer Vault",
+        historian: "Historian Log"
+      };
+      document.getElementById('currentDeskTitle').innerText = titles[desk] || "Executive Office";
+
+      if (desk === 'attendance') {
+        if (!document.getElementById('attDate').value) {
+          document.getElementById('attDate').valueAsDate = new Date();
+        }
+        renderAttendance();
+      }
     }
 
     // CONFIG MODAL
@@ -1175,13 +1326,13 @@
     }
     function handleSaveConfig(e) {
       e.preventDefault();
-      SUPABASE_URL = document.getElementById('cfgUrl').value.trim();
+      SUPABASE_URL = cleanSupabaseUrl(document.getElementById('cfgUrl').value);
       SUPABASE_KEY = document.getElementById('cfgKey').value.trim();
       localStorage.setItem('mustang_sb_url', SUPABASE_URL);
       localStorage.setItem('mustang_sb_key', SUPABASE_KEY);
       closeConfigModal();
       initSupabase();
-      showToast("Supabase configuration saved!", "success");
+      showToast("Supabase configuration saved & sanitized!", "success");
     }
 
     // AUTH ACTIONS
@@ -1243,7 +1394,151 @@
       navigateTab('boardroom');
     }
 
-    // ACCOUNT CREATION (LEADERSHIP)
+    // ATTENDANCE FUNCTIONS
+    function toggleSelectAllMembers(check) {
+      document.querySelectorAll('.member-att-check').forEach(cb => {
+        cb.checked = check;
+      });
+      updatePresentCountBadge();
+    }
+
+    function updatePresentCountBadge() {
+      const count = document.querySelectorAll('.member-att-check:checked').length;
+      document.getElementById('attPresentCountBadge').innerText = `${count} Present`;
+    }
+
+    async function handleSaveAttendance(e) {
+      e.preventDefault();
+      if (!sbClient) return showToast("Supabase not connected", "error");
+
+      const date = document.getElementById('attDate').value;
+      const meeting_title = document.getElementById('attMeetingTitle').value.trim();
+      const notes = document.getElementById('attNotes').value.trim();
+      const guestInput = document.getElementById('attGuestNames').value.trim();
+      const autoEnroll = document.getElementById('attAutoEnrollGuests').checked;
+
+      // Collect checked members
+      const checkedBoxes = document.querySelectorAll('.member-att-check:checked');
+      const present_members = Array.from(checkedBoxes).map(cb => ({
+        id: cb.dataset.id,
+        name: cb.dataset.name,
+        role: cb.dataset.role
+      }));
+
+      // Parse guest names
+      const guest_attendees = guestInput ? guestInput.split(',').map(g => g.trim()).filter(g => g.length > 0) : [];
+
+      // Auto-enroll walk-ins if checked
+      if (autoEnroll && guest_attendees.length > 0) {
+        for (const guest of guest_attendees) {
+          const fakeEmail = `${guest.toLowerCase().replace(/\s+/g, '.')}${Math.floor(Math.random()*900+100)}@mustangs.edu`;
+          await sbClient.from('profiles').insert([{
+            name: guest,
+            email: fakeEmail,
+            role: 'Member',
+            pin: '1234'
+          }]);
+        }
+      }
+
+      // Save roll call record
+      const { error } = await sbClient.from('attendance_records').insert([{
+        date,
+        meeting_title,
+        present_members,
+        guest_attendees,
+        notes,
+        recorded_by: CURRENT_USER ? CURRENT_USER.name : 'Officer'
+      }]);
+
+      if (error) return showToast(error.message, "error");
+
+      showToast(`Attendance recorded for ${date}! (${present_members.length} members present)`, "success");
+      document.getElementById('attGuestNames').value = '';
+      document.getElementById('attNotes').value = '';
+      fetchCloudData();
+    }
+
+    function renderAttendance() {
+      // 1. Render Member Checklist
+      const checkContainer = document.getElementById('attendanceMemberChecklist');
+      if (checkContainer) {
+        if (CACHE.users.length === 0) {
+          checkContainer.innerHTML = `<div class="p-4 text-center text-slate-400 text-xs">No enrolled members on roster yet.</div>`;
+        } else {
+          checkContainer.innerHTML = CACHE.users.map(u => `
+            <label class="flex items-center justify-between p-2 rounded-lg bg-white border border-parchment-200 hover:border-mustangGold-500 cursor-pointer text-xs">
+              <div class="flex items-center space-x-2.5">
+                <input type="checkbox" data-id="${u.id}" data-name="${u.name}" data-role="${u.role}" onchange="updatePresentCountBadge()" class="member-att-check rounded accent-mustangGold-600">
+                <span class="font-medium text-slate-800">${u.name}</span>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] bg-parchment-100 text-slate-600 font-mono">${u.role}</span>
+            </label>
+          `).join('');
+        }
+      }
+
+      // 2. Render Attendance History
+      const histFeed = document.getElementById('attendanceHistoryFeed');
+      const countLabel = document.getElementById('attRecordCountLabel');
+      if (countLabel) countLabel.innerText = `${CACHE.attendance.length} meetings recorded`;
+
+      if (!histFeed) return;
+
+      if (CACHE.attendance.length === 0) {
+        histFeed.innerHTML = `<div class="p-8 text-center text-slate-400 text-xs">No roll call records archived yet.</div>`;
+        return;
+      }
+
+      histFeed.innerHTML = CACHE.attendance.map(a => {
+        const presentCount = (a.present_members || []).length;
+        const guestCount = (a.guest_attendees || []).length;
+        const rosterCount = Math.max(1, CACHE.users.length);
+        const rate = Math.round((presentCount / rosterCount) * 100);
+
+        return `
+          <div class="clean-card p-4 rounded-xl border border-parchment-200 space-y-2.5 text-xs">
+            <div class="flex items-center justify-between border-b border-parchment-200 pb-2">
+              <div>
+                <span class="font-bold text-sm text-mustangNavy-900">${a.meeting_title}</span>
+                <div class="text-[11px] font-mono text-mustangGold-700">${a.date}</div>
+              </div>
+              <div class="text-right">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${rate >= 75 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                  ${rate}% Roster Turnout
+                </span>
+                <div class="text-[10px] text-slate-400 font-mono mt-0.5">${presentCount} Present • ${guestCount} Guests</div>
+              </div>
+            </div>
+
+            <!-- Present Members Tag Cloud -->
+            <div>
+              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Present Attendees:</span>
+              <div class="flex flex-wrap gap-1">
+                ${(a.present_members || []).map(m => `
+                  <span class="px-2 py-0.5 rounded bg-parchment-100 text-slate-700 text-[10px] font-medium border border-parchment-200">${m.name}</span>
+                `).join('')}
+                ${(a.guest_attendees || []).map(g => `
+                  <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-medium border border-amber-200">★ ${g} (Guest)</span>
+                `).join('')}
+              </div>
+            </div>
+
+            ${a.notes ? `
+              <div class="p-2 bg-parchment-50 rounded text-[11px] text-slate-600 italic border border-parchment-200">
+                "${a.notes}"
+              </div>
+            ` : ''}
+
+            <div class="text-[10px] text-slate-400 font-mono text-right pt-1">
+              Roll taken by ${a.recorded_by}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // OTHER MODULES
     async function handleCreateAccount(e) {
       e.preventDefault();
       if (!sbClient) return showToast("No Supabase connection.", "error");
@@ -1268,7 +1563,6 @@
       showToast("Account removed.");
     }
 
-    // DRAFT SUBMISSION & REVIEW
     async function handleDraftSubmission(e) {
       e.preventDefault();
       if (!sbClient) return showToast("Supabase not connected", "error");
@@ -1373,7 +1667,6 @@
     }
     function closeReadManuscriptModal() { document.getElementById('modalReadManuscript').classList.add('hidden'); }
 
-    // MESSAGING
     async function handleSendMessage(e) {
       e.preventDefault();
       if (!sbClient) return showToast("Supabase not connected", "error");
@@ -1395,7 +1688,6 @@
       fetchCloudData();
     }
 
-    // HISTORIAN MILESTONES
     function openHistorianMilestoneModal() {
       document.getElementById('histDate').valueAsDate = new Date();
       document.getElementById('modalHistorianMilestone').classList.remove('hidden');
@@ -1444,7 +1736,6 @@
       fetchCloudData();
     }
 
-    // TREASURY TRANSACTIONS
     function openLogSaleModal() { document.getElementById('modalLogSale').classList.remove('hidden'); }
     function closeLogSaleModal() { document.getElementById('modalLogSale').classList.add('hidden'); }
 
@@ -1479,7 +1770,6 @@
       showToast("Trip goal updated.");
     }
 
-    // ANNOUNCEMENTS
     function openNewAnnouncementModal() {
       document.getElementById('annDate').valueAsDate = new Date();
       document.getElementById('modalNewAnnouncement').classList.remove('hidden');
@@ -1507,7 +1797,6 @@
       fetchCloudData();
     }
 
-    // CALENDAR EVENTS
     function openNewEventModal() { document.getElementById('modalNewEvent').classList.remove('hidden'); }
     function closeNewEventModal() { document.getElementById('modalNewEvent').classList.add('hidden'); }
 
@@ -1526,7 +1815,6 @@
       fetchCloudData();
     }
 
-    // MEETING MINUTES
     function openNewNotesModal() {
       document.getElementById('noteDate').valueAsDate = new Date();
       document.getElementById('modalNewNotes').classList.remove('hidden');
@@ -1547,7 +1835,6 @@
       fetchCloudData();
     }
 
-    // NOTIFICATIONS PANEL
     function toggleNotificationPanel() {
       document.getElementById('notificationDropdown').classList.toggle('hidden');
     }
@@ -1556,7 +1843,6 @@
       fetchCloudData();
     }
 
-    // RENDERING FUNCTIONS
     function renderMetrics() {
       document.getElementById('statMembersCount').innerText = CACHE.users.length;
       document.getElementById('statOfficersRatio').innerText = `${CACHE.users.filter(u => u.role !== 'Member').length} in Leadership`;
@@ -1787,7 +2073,6 @@
       `).join('');
     }
 
-    // WRITER'S STUDIO PROMPTS
     const PROMPTS = [
       { title: "The Midnight Bookshop Behind the Gymnasium", body: "Every Friday after stadium lights dim, a spiral door opens beneath the home bleachers leading to a reading parlor where characters from unfinished student stories gather." },
       { title: "The Antiquarian of Forgotten Signals", body: "In an abandoned hotel near MegaCon, someone discovers a CRT television that only broadcasts interviews with characters after their authors close their laptops." },
@@ -1807,7 +2092,6 @@
       navigateTab('submissions');
     }
 
-    // TOAST NOTIFICATIONS
     function showToast(msg, type = "info") {
       const box = document.getElementById('toastBox');
       const t = document.createElement('div');
