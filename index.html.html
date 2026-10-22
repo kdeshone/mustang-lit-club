@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mustang Literature Club — Cloud Command Center</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Google Fonts: Cinzel, Playfair Display, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            mustangNavy: { 800: '#152238', 900: '#0C1524', 950: '#070C15' },
+            mustangGold: { 300: '#FDE047', 400: '#FACC15', 500: '#EAB308', 600: '#CA8A04', 700: '#A16207' },
+            parchment: { 50: '#FAF8F5', 100: '#F4EFEA', 200: '#E8DED2', 300: '#D5C4B0', 800: '#4A3B2C', 900: '#2C2219' }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            display: ['Cinzel', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #F4EFEA; }
+    ::-webkit-scrollbar-thumb { background: #D5C4B0; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #CA8A04; }
+    .parchment-pattern {
+      background-color: #FAF8F5;
+      background-image: radial-gradient(#E8DED2 0.75px, transparent 0.75px), radial-gradient(#E8DED2 0.75px, #FAF8F5 0.75px);
+      background-size: 26px 26px;
+      background-position: 0 0, 13px 13px;
+    }
+    .clean-card {
+      background: #FFFFFF;
+      border: 1px solid #E8DED2;
+      box-shadow: 0 4px 18px -2px rgba(12, 21, 36, 0.05);
+    }
+  </style>
+</head>
+<body class="parchment-pattern text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-mustangGold-500 selection:text-mustangNavy-950">
+
+  <!-- TOP BAR -->
+  <div class="bg-mustangNavy-950 text-parchment-100 px-4 py-2 text-xs border-b border-mustangGold-600/30 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center space-x-2 font-medium">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-mustangGold-500 text-mustangNavy-950">
+          <i class="fa-solid fa-horse mr-1.5"></i> MUSTANG LIT
+        </span>
+        <span class="font-serif italic text-parchment-200">Student Anthology Mini-Book & MegaCon Orlando Cloud Command</span>
+      </div>
+
+      <div class="flex items-center space-x-4 text-xs font-mono">
+        <div id="cloudStatusBadge" class="flex items-center space-x-1.5 text-slate-400">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span>Connecting Cloud...</span>
+        </div>
+        <div class="hidden sm:inline-block text-slate-600">|</div>
+        <div class="flex items-center space-x-1.5 text-mustangGold-400">
+          <i class="fa-solid fa-coins"></i>
+          <span>TREASURY:</span>
+          <span id="topBarTreasury">$0 / $3,500</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION HEADER -->
+  <header class="bg-mustangNavy-900 border-b border-slate-800 text-white sticky top-[37px] z-40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+      
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTab('announcements')">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-mustangGold-400 to-mustangGold-600 text-mustangNavy-950 flex items-center justify-center font-bold text-xl shadow-lg border border-mustangGold-300">
+          <i class="fa-solid fa-feather-pointed"></i>
+        </div>
+        <div>
+          <h1 class="font-display font-bold text-lg md:text-xl tracking-wider text-mustangGold-400 leading-none">
+            MUSTANG LITERATURE CLUB
+          </h1>
+          <p class="text-[11px] text-parchment-200 font-serif italic tracking-wide mt-0.5">Cloud Database Connected • Mini-Book Publishing HQ</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <!-- Supabase Settings Button -->
+        <button onclick="openConfigModal()" title="Supabase Database Settings" class="p-2 rounded-lg bg-mustangNavy-800 text-slate-300 hover:text-mustangGold-400 hover:bg-mustangNavy-700 text-xs">
+          <i class="fa-solid fa-database"></i>
+        </button>
+
+        <!-- Notification Bell -->
+        <div class="relative">
+          <button onclick="toggleNotificationPanel()" class="relative p-2 rounded-lg bg-mustangNavy-800 text-slate-300 hover:text-mustangGold-400 hover:bg-mustangNavy-700 text-xs">
+            <i class="fa-solid fa-bell text-sm"></i>
+            <span id="notifUnreadBadge" class="hidden absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-rose-500 text-white font-mono">0</span>
+          </button>
+          
+          <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 clean-card rounded-2xl shadow-2xl z-50 overflow-hidden border border-parchment-300 text-slate-800">
+            <div class="p-3 bg-mustangNavy-900 text-white flex items-center justify-between border-b border-slate-800">
+              <span class="font-serif font-bold text-xs">Live Cloud Alerts</span>
+              <button onclick="clearNotifications()" class="text-[10px] text-slate-400 hover:text-mustangGold-400 underline">Dismiss All</button>
+            </div>
+            <div id="notificationList" class="max-h-72 overflow-y-auto divide-y divide-parchment-200 text-xs bg-white"></div>
+          </div>
+        </div>
+
+        <!-- Current User Badge -->
+        <div id="currentUserBadge" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-mustangNavy-800 border border-slate-700 text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span id="activeUserName" class="font-medium text-parchment-100">Guest</span>
+          <span id="activeUserRoleBadge" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-mustangGold-500/20 text-mustangGold-400 border border-mustangGold-500/30 uppercase font-mono">Unregistered</span>
+        </div>
+
+        <!-- Auth Action Button -->
+        <button id="authActionBtn" onclick="openLoginModal()" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-mustangGold-500 text-mustangNavy-950 hover:bg-mustangGold-400 transition shadow">
+          <span id="authBtnLabel">Sign In</span>
+        </button>
+
+        <button onclick="toggleMobileNav()" class="md:hidden p-2 rounded-lg text-slate-300 hover:bg-mustangNavy-800">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800/80">
+      <div id="navLinks" class="hidden md:flex space-x-1 py-1 overflow-x-auto text-xs font-medium">
+        <button onclick="navigateTab('announcements')" data-tab="announcements" class="nav-tab px-3 py-2 rounded-md text-mustangGold-400 font-semibold bg-mustangNavy-800 flex items-center space-x-1.5">
+          <i class="fa-regular fa-newspaper"></i>
+          <span>Announcements</span>
+        </button>
+        <button onclick="navigateTab('calendar')" data-tab="calendar" class="nav-tab px-3 py-2 rounded-md hover:bg-mustangNavy-800 text-slate-300 flex items-center space-x-1.5">
+          <i class="fa-regular fa-calendar-days"></i>
+          <span>Meeting Calendar</span>
+        </button>
+        <button onclick="navigateTab('notes')" data-tab="notes" class="nav-tab px-3 py-2 rounded-md hover:bg-mustangNavy-800 text-slate-300 flex items-center space-x-1.5">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Meeting Notes</span>
+        </button>
+        <button onclick="navigateTab('submissions')" data-tab="submissions" class="nav-tab px-3 py-2 rounded-md hover:bg-mustangNavy-800 text-slate-300 flex items-center space-x-1.5">
+          <i class="fa-solid fa-feather"></i>
+          <span>Draft Submissions</span>
+          <span id="draftCountBadge" class="hidden text-[10px] bg-mustangGold-500 text-mustangNavy-950 font-mono px-1.5 rounded-full font-bold">0</span>
+        </button>
+        <button onclick="navigateTab('messages')" data-tab="messages" class="nav-tab px-3 py-2 rounded-md hover:bg-mustangNavy-800 text-slate-300 flex items-center space-x-1.5">
+          <i class="fa-solid fa-comments"></i>
+          <span>Editorial Messages</span>
+        </button>
+        <button onclick="navigateTab('megacon')" data-tab="megacon" class="nav-tab px-3 py-2 rounded-md hover:bg-mustangNavy-800 text-slate-300 flex items-center space-x-1.5">
+          <i class="fa-solid fa-shuttle-space text-mustangGold-400"></i>
+          <span>MegaCon Fundraiser</span>
+        </button>
+        <button onclick="navigateTab('tools')" data-tab="tools" class="nav-tab px-3 py-2 rounded-md hover:bg-mustangNavy-800 text-slate-300 flex items-center space-x-1.5">
+          <i class="fa-solid fa-pen-nib"></i>
+          <span>Writer's Studio</span>
+        </button>
+        <button onclick="navigateTab('boardroom')" data-tab="boardroom" class="nav-tab ml-auto px-3.5 py-2 rounded-md font-serif font-bold text-mustangGold-300 bg-mustangGold-600/10 border border-mustangGold-500/20 flex items-center space-x-1.5">
+          <i id="boardroomLockIcon" class="fa-solid fa-lock text-[11px] text-mustangGold-400"></i>
+          <span>Leadership Room</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- INITIALIZATION ALERT (IF NO SPONSOR IN SUPABASE) -->
+    <div id="initWizardContainer" class="hidden mb-6">
+      <div class="clean-card rounded-2xl p-6 border-2 border-mustangGold-500 bg-gradient-to-br from-white via-parchment-50 to-mustangGold-50">
+        <div class="max-w-2xl">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-mustangGold-100 text-mustangGold-800 mb-2">
+            First-Time Setup
+          </span>
+          <h2 class="font-serif text-2xl font-bold text-mustangNavy-900">Initialize Sponsor Authority</h2>
+          <p class="text-xs sm:text-sm text-slate-600 mt-1">No Teacher Sponsor account exists in the database. The club faculty advisor must register first to establish master administrative access.</p>
+          <button onclick="openSponsorRegisterModal()" class="mt-4 px-4 py-2 rounded-xl bg-mustangNavy-900 text-mustangGold-400 text-xs font-semibold shadow">Register as Teacher Sponsor &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- METRICS STRIP -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
+      <div class="clean-card rounded-xl p-3.5 sm:p-4">
+        <span class="text-[10px] uppercase font-bold text-slate-500 block">Enrolled Members</span>
+        <div class="text-xl sm:text-2xl font-bold font-mono text-mustangNavy-900 mt-1" id="statMembersCount">0</div>
+        <span class="text-[11px] text-slate-500" id="statOfficersRatio">0 in Leadership</span>
+      </div>
+      <div class="clean-card rounded-xl p-3.5 sm:p-4">
+        <span class="text-[10px] uppercase font-bold text-slate-500 block">Drafts In Cloud</span>
+        <div class="text-xl sm:text-2xl font-bold font-mono text-mustangNavy-900 mt-1" id="statDraftsCount">0</div>
+        <span class="text-[11px] text-slate-500" id="statApprovedCount">0 Approved for Print</span>
+      </div>
+      <div class="clean-card rounded-xl p-3.5 sm:p-4">
+        <span class="text-[10px] uppercase font-bold text-slate-500 block">MegaCon Treasury</span>
+        <div class="text-xl sm:text-2xl font-bold font-mono text-emerald-600 mt-1" id="statRaisedAmt">$0</div>
+        <span class="text-[11px] text-slate-500" id="statGoalSubtext">Goal: $3,500</span>
+      </div>
+      <div class="clean-card rounded-xl p-3.5 sm:p-4">
+        <span class="text-[10px] uppercase font-bold text-slate-500 block">Next Meeting</span>
+        <div class="text-sm font-bold text-mustangNavy-900 truncate mt-1" id="statNextMeetingDate">None Scheduled</div>
+        <span class="text-[11px] text-slate-500 truncate block" id="statNextMeetingRoom">Awaiting Announcement</span>
+      </div>
+    </div>
+
+    <!-- TAB 1: ANNOUNCEMENTS -->
+    <div id="tab-announcements" class="tab-pane space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-parchment-200">
+        <div>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-mustangNavy-900">Mustang Bulletins & Dispatches</h2>
+          <p class="text-xs text-slate-600">Official club communications synced directly with Supabase.</p>
+        </div>
+        <button id="btnNewAnnouncement" onclick="openNewAnnouncementModal()" class="hidden px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-mustangNavy-900 text-mustangGold-400 hover:bg-mustangNavy-800 shadow">
+          <i class="fa-solid fa-plus mr-1"></i> Post Dispatch
+        </button>
+      </div>
+      <div id="announcementsList" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 2: CALENDAR -->
+    <div id="tab-calendar" class="tab-pane hidden space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-parchment-200">
+        <div>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-mustangNavy-900">Club Schedule & Anthology Deadlines</h2>
+          <p class="text-xs text-slate-600">Meetings, workshops, and MegaCon dates.</p>
+        </div>
+        <button id="btnNewCalendarEvent" onclick="openNewEventModal()" class="hidden px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-mustangNavy-900 text-mustangGold-400 hover:bg-mustangNavy-800 shadow">
+          <i class="fa-solid fa-plus mr-1"></i> Add Event
+        </button>
+      </div>
+      <div id="calendarEventsList" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 3: MEETING NOTES -->
+    <div id="tab-notes" class="tab-pane hidden space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-parchment-200">
+        <div>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-mustangNavy-900">Official Meeting Minutes & Agendas</h2>
+          <p class="text-xs text-slate-600">Archived votes, discussions, and directives.</p>
+        </div>
+        <button id="btnNewMeetingNotes" onclick="openNewNotesModal()" class="hidden px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-mustangNavy-900 text-mustangGold-400 hover:bg-mustangNavy-800 shadow">
+          <i class="fa-solid fa-pen-fancy mr-1"></i> Record Minutes
+        </button>
+      </div>
+      <div id="meetingNotesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- TAB 4: DRAFT SUBMISSIONS -->
+    <div id="tab-submissions" class="tab-pane hidden space-y-6">
+      <div class="clean-card rounded-2xl p-6 bg-gradient-to-r from-mustangNavy-900 to-mustangNavy-800 text-white">
+        <h2 class="font-serif text-2xl font-bold text-mustangGold-400">Anthology Draft Submissions Portal</h2>
+        <p class="text-xs sm:text-sm text-parchment-100 mt-1">Submit rough drafts or files directly to the cloud. Editor notes and status changes sync live across all member devices.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Draft Form -->
+        <div class="lg:col-span-5 clean-card p-5 rounded-2xl">
+          <h3 class="font-serif font-bold text-base text-mustangNavy-900 pb-3 border-b border-parchment-200 mb-4">
+            <i class="fa-solid fa-feather text-mustangGold-600 mr-1.5"></i> Submit New Manuscript
+          </h3>
+          <form onsubmit="handleDraftSubmission(event)" class="space-y-3 text-xs">
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Author / Pen Name *</label>
+              <input type="text" id="draftAuthor" required placeholder="Author name" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Piece Title *</label>
+              <input type="text" id="draftTitle" required placeholder="Title of work" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-medium text-slate-700 mb-1">Genre / Category *</label>
+                <select id="draftCategory" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+                  <option value="Short Story">Short Story</option>
+                  <option value="Poetry Suite">Poetry Suite</option>
+                  <option value="Flash Fiction">Flash Fiction</option>
+                  <option value="Sci-Fi / Fantasy">Sci-Fi / Fantasy</option>
+                  <option value="Creative Non-Fiction">Creative Non-Fiction</option>
+                  <option value="Comic Script">Comic Script</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-medium text-slate-700 mb-1">Word Count</label>
+                <input type="number" id="draftWordCount" placeholder="e.g. 1200" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+              </div>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Synopsis / Note for Editor *</label>
+              <input type="text" id="draftSynopsis" required placeholder="Brief one-line summary" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Manuscript Text or Document Link *</label>
+              <textarea id="draftContent" required rows="5" placeholder="Paste draft text, Google Docs sharing link, or prose here..." class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg font-serif"></textarea>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Optional File Attachment (DOCX / PDF)</label>
+              <input type="file" id="draftFile" class="w-full text-slate-500 text-[11px]">
+            </div>
+            <button type="submit" class="w-full py-2.5 rounded-lg font-bold bg-mustangNavy-900 text-mustangGold-400 hover:bg-mustangNavy-800 shadow">
+              <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Transmit to Cloud Editorial Desk
+            </button>
+          </form>
+        </div>
+
+        <!-- Drafts Feed -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-serif font-bold text-lg text-mustangNavy-900">Cloud Submissions Queue</h3>
+            <span class="text-xs text-slate-500 font-mono" id="queueCountIndicator">0 works submitted</span>
+          </div>
+          <div id="studentDraftsFeed" class="space-y-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: MESSAGING HUB -->
+    <div id="tab-messages" class="tab-pane hidden space-y-6">
+      <div class="flex items-center justify-between pb-2 border-b border-parchment-200">
+        <div>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-mustangNavy-900">Manuscript Communications & Editorial Desk</h2>
+          <p class="text-xs text-slate-600">Real-time messaging between authors and student editors.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 clean-card p-5 rounded-2xl h-fit">
+          <h3 class="font-serif font-bold text-base text-mustangNavy-900 pb-3 border-b border-parchment-200 mb-4">
+            <i class="fa-solid fa-paper-plane text-mustangGold-600 mr-1.5"></i> Send Editorial Note
+          </h3>
+          <form onsubmit="handleSendMessage(event)" class="space-y-3 text-xs">
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Related Manuscript *</label>
+              <select id="msgDraftSelect" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+                <option value="General">General Inquiry</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Recipient *</label>
+              <select id="msgRecipient" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+                <option value="Editorial Board">Editorial Board</option>
+                <option value="All Members">All Members</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Message *</label>
+              <textarea id="msgBody" required rows="4" placeholder="Detail feedback or ask questions..." class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg"></textarea>
+            </div>
+            <button type="submit" class="w-full py-2.5 rounded-lg font-bold bg-mustangNavy-900 text-mustangGold-400 hover:bg-mustangNavy-800 shadow">
+              Send Cloud Dispatch
+            </button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-serif font-bold text-lg text-mustangNavy-900">Active Editorial Conversations</h3>
+            <span class="text-xs text-slate-500 font-mono" id="msgCountLabel">0 communications</span>
+          </div>
+          <div id="messagesFeed" class="space-y-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: MEGACON FUNDRAISER & LEDGER -->
+    <div id="tab-megacon" class="tab-pane hidden space-y-6">
+      <div class="clean-card rounded-2xl p-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-parchment-200">
+          <div>
+            <h2 class="font-serif text-2xl font-bold text-mustangNavy-900">MegaCon Orlando Expedition & Anthology Sales</h2>
+            <p class="text-xs text-slate-600">Funded exclusively by proceeds from student mini-book sales.</p>
+          </div>
+          <button id="btnSetBudgetGoal" onclick="promptSetTripGoal()" class="hidden text-xs px-3 py-1.5 rounded-lg bg-mustangNavy-900 text-mustangGold-400 font-semibold shadow">
+            Edit Target Goal
+          </button>
+        </div>
+
+        <div class="mt-6">
+          <div class="flex justify-between text-xs font-medium mb-1">
+            <span class="text-slate-600">Funding Progress</span>
+            <span id="fundProgressPct" class="font-mono font-bold text-mustangNavy-900">0%</span>
+          </div>
+          <div class="w-full bg-parchment-200 rounded-full h-3 overflow-hidden border border-parchment-300">
+            <div id="fundProgressBar" class="bg-gradient-to-r from-mustangGold-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div class="flex justify-between items-center text-xs text-slate-500 mt-2">
+            <span id="fundRaisedDetail">$0.00 raised</span>
+            <span id="fundGoalDetail">Goal: $3,500.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <!-- Sales Quota Calculator -->
+        <div class="md:col-span-6 clean-card p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <h3 class="font-serif font-bold text-base text-mustangNavy-900 mb-2">
+              <i class="fa-solid fa-calculator text-mustangGold-600 mr-1.5"></i> Mini-Book Quota Calculator
+            </h3>
+            <div class="space-y-4 text-xs">
+              <div>
+                <div class="flex justify-between text-slate-700 font-medium mb-1">
+                  <span>Retail Price:</span>
+                  <span id="calcRetailDisplay" class="font-mono font-bold">$12.00</span>
+                </div>
+                <input type="range" id="calcRetailInput" min="8" max="25" step="1" value="12" oninput="runFundraiserCalc()" class="w-full accent-mustangGold-600">
+              </div>
+              <div>
+                <div class="flex justify-between text-slate-700 font-medium mb-1">
+                  <span>Printing Cost / Unit:</span>
+                  <span id="calcCostDisplay" class="font-mono font-bold">$4.00</span>
+                </div>
+                <input type="range" id="calcCostInput" min="2" max="8" step="0.5" value="4" oninput="runFundraiserCalc()" class="w-full accent-mustangGold-600">
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 p-4 rounded-xl bg-parchment-100 border border-parchment-200">
+            <div class="grid grid-cols-2 gap-3 text-center">
+              <div class="p-2.5 rounded-lg bg-white border border-parchment-200">
+                <span class="text-[10px] uppercase font-bold text-slate-500">Margin / Copy</span>
+                <div id="calcMarginOutput" class="text-lg font-bold font-mono text-emerald-600 mt-0.5">$8.00</div>
+              </div>
+              <div class="p-2.5 rounded-lg bg-white border border-parchment-200">
+                <span class="text-[10px] uppercase font-bold text-slate-500">Total Books Needed</span>
+                <div id="calcBooksNeededOutput" class="text-lg font-bold font-mono text-mustangNavy-900 mt-0.5">0 copies</div>
+              </div>
+            </div>
+            <div class="mt-3 p-3 bg-mustangNavy-900 text-mustangGold-400 rounded-lg text-center font-mono font-bold text-sm" id="calcIndividualTarget">
+              0 copies / member
+            </div>
+          </div>
+        </div>
+
+        <!-- Treasury Ledger -->
+        <div class="md:col-span-6 clean-card p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-parchment-200 mb-3">
+              <h3 class="font-serif font-bold text-base text-mustangNavy-900">
+                <i class="fa-solid fa-receipt text-mustangGold-600 mr-1.5"></i> Treasury Ledger
+              </h3>
+              <button id="btnLogSale" onclick="openLogSaleModal()" class="hidden text-xs px-2.5 py-1 rounded bg-mustangNavy-900 text-mustangGold-400 font-semibold hover:bg-mustangNavy-800">
+                + Add Entry
+              </button>
+            </div>
+            <div class="overflow-y-auto max-h-64 pr-1">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-parchment-200 text-slate-500 uppercase text-[10px]">
+                    <th class="py-2">Date</th>
+                    <th class="py-2">Description</th>
+                    <th class="py-2 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="treasuryLedgerBody" class="divide-y divide-parchment-200"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="pt-3 border-t border-parchment-200 text-[11px] text-slate-500">
+            Real-time balance synced across leadership devices.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 7: WRITER'S STUDIO -->
+    <div id="tab-tools" class="tab-pane hidden space-y-6">
+      <div class="flex items-center justify-between pb-2 border-b border-parchment-200">
+        <div>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-mustangNavy-900">The Writer's Studio & Creative Crucible</h2>
+          <p class="text-xs text-slate-600">Prompts, drafting scratchpad, and publishing guidelines.</p>
+        </div>
+        <button onclick="generateRandomPrompt()" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-mustangNavy-900 text-mustangGold-400 shadow">
+          <i class="fa-solid fa-dice mr-1"></i> New Prompt Spark
+        </button>
+      </div>
+
+      <div class="clean-card rounded-2xl p-6 bg-gradient-to-br from-parchment-50 to-mustangGold-50/50">
+        <span class="text-[10px] font-mono font-bold uppercase text-mustangGold-700">Anthology Story Spark</span>
+        <h3 id="toolPromptTitle" class="font-serif text-xl font-bold text-mustangNavy-900 mt-1">"The Midnight Bookshop Behind the Gymnasium"</h3>
+        <p id="toolPromptBody" class="text-xs sm:text-sm text-slate-700 mt-1 font-serif italic leading-relaxed">
+          "Every Friday after stadium lights dim, a spiral door opens beneath the home bleachers leading to a reading parlor where characters from unfinished student stories gather."
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="clean-card p-5 rounded-xl flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-serif font-bold text-sm text-mustangNavy-900">Live Drafting Scratchpad</span>
+              <span id="scratchWords" class="text-xs font-mono font-bold bg-parchment-100 px-2 py-0.5 rounded">0 words</span>
+            </div>
+            <textarea id="studioScratchpad" oninput="updateScratchCount()" rows="8" placeholder="Draft scenes or test dialogue..." class="w-full text-xs p-3 bg-parchment-50 border border-parchment-300 rounded-lg font-serif"></textarea>
+          </div>
+          <button onclick="transferScratchToSubmit()" class="mt-3 text-xs text-mustangGold-600 font-semibold self-end hover:underline">
+            Copy to Draft Submission Form &rarr;
+          </button>
+        </div>
+
+        <div class="clean-card p-5 rounded-xl space-y-3 text-xs">
+          <h4 class="font-serif font-bold text-sm text-mustangNavy-900">Mini-Book Publication Specs</h4>
+          <div class="p-2.5 rounded-lg bg-parchment-50 border border-parchment-200">
+            <strong>Word Count Limits:</strong> Short stories: <2,500 words. Flash fiction: <800 words. Poetry: 1–3 pieces.
+          </div>
+          <div class="p-2.5 rounded-lg bg-parchment-50 border border-parchment-200">
+            <strong>Content Standard:</strong> PG-13 rated for school compliance. Creative thrillers and fantasy violence allowed.
+          </div>
+          <div class="p-2.5 rounded-lg bg-parchment-50 border border-parchment-200">
+            <strong>Two-Pass Review:</strong> Developmental content critique followed by mechanical line editing.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 8: LEADERSHIP BOARDROOM (LOCKED) -->
+    <div id="tab-boardroom" class="tab-pane hidden space-y-6">
+      <div id="boardroomLockedView" class="clean-card rounded-2xl p-8 sm:p-12 text-center max-w-lg mx-auto my-6 border-2 border-dashed border-mustangGold-500">
+        <div class="w-16 h-16 rounded-2xl bg-mustangGold-100 text-mustangNavy-900 mx-auto flex items-center justify-center text-3xl mb-4 shadow">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h3 class="font-serif text-2xl font-bold text-mustangNavy-900">The Executive Boardroom</h3>
+        <p class="text-xs text-slate-600 mt-2 mb-6">Restricted to Teacher Sponsor and elected officers: President, VP, Editor, Treasurer, Historian.</p>
+        <button onclick="openLoginModal()" class="w-full py-2.5 rounded-xl bg-mustangNavy-900 text-mustangGold-400 font-semibold text-xs shadow">
+          Sign In with Officer Credentials
+        </button>
+      </div>
+
+      <div id="boardroomUnlockedView" class="hidden space-y-6">
+        <div class="bg-mustangNavy-900 text-white rounded-2xl p-5 border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 class="font-serif font-bold text-lg text-white">Mustang Executive Command</h3>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400">AUTHORIZED</span>
+            </div>
+            <p class="text-xs text-slate-400">Sub-Desk: <span id="currentDeskTitle" class="text-mustangGold-400 font-semibold">Roster & Accounts</span></p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5 text-xs">
+            <button onclick="switchLeadershipSubDesk('roster')" data-subdesk="roster" class="subdesk-btn px-3 py-1.5 rounded-lg bg-mustangGold-600 text-mustangNavy-950 font-bold">Roster & Accounts</button>
+            <button onclick="switchLeadershipSubDesk('editor')" data-subdesk="editor" class="subdesk-btn px-3 py-1.5 rounded-lg bg-mustangNavy-800 text-slate-300">Editor Review Queue</button>
+            <button onclick="switchLeadershipSubDesk('treasurer')" data-subdesk="treasurer" class="subdesk-btn px-3 py-1.5 rounded-lg bg-mustangNavy-800 text-slate-300">Treasurer Vault</button>
+            <button onclick="switchLeadershipSubDesk('historian')" data-subdesk="historian" class="subdesk-btn px-3 py-1.5 rounded-lg bg-mustangNavy-800 text-slate-300">Historian Log</button>
+          </div>
+        </div>
+
+        <!-- SUBDESK 1: ROSTER -->
+        <div id="subdesk-roster" class="subdesk-content space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-5 clean-card p-5 rounded-2xl">
+              <h4 class="font-serif font-bold text-base text-mustangNavy-900 pb-3 border-b border-parchment-200 mb-4">Provision Member / Officer Account</h4>
+              <form onsubmit="handleCreateAccount(event)" class="space-y-3 text-xs">
+                <div>
+                  <label class="block font-medium text-slate-700 mb-1">Full Name *</label>
+                  <input type="text" id="newAccName" required placeholder="Student Name" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+                </div>
+                <div>
+                  <label class="block font-medium text-slate-700 mb-1">Email / Student ID *</label>
+                  <input type="text" id="newAccEmail" required placeholder="student@mustangs.edu" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block font-medium text-slate-700 mb-1">Club Role *</label>
+                    <select id="newAccRole" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+                      <option value="Member">Club Member</option>
+                      <option value="President">President</option>
+                      <option value="Vice President">Vice President</option>
+                      <option value="Editor">Editor</option>
+                      <option value="Treasurer">Treasurer</option>
+                      <option value="Historian">Historian</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block font-medium text-slate-700 mb-1">Login PIN *</label>
+                    <input type="password" id="newAccPin" required placeholder="4-digit PIN" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg font-mono">
+                  </div>
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-lg font-bold bg-mustangNavy-900 text-mustangGold-400 hover:bg-mustangNavy-800 shadow">
+                  Save Account to Supabase
+                </button>
+              </form>
+            </div>
+
+            <div class="lg:col-span-7 clean-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between pb-3 border-b border-parchment-200 mb-3">
+                <h4 class="font-serif font-bold text-base text-mustangNavy-900">Enrolled Roster</h4>
+                <span class="text-xs font-mono text-slate-500" id="rosterCountLabel">0 enrolled</span>
+              </div>
+              <div class="overflow-x-auto max-h-96">
+                <table class="w-full text-left text-xs">
+                  <thead>
+                    <tr class="border-b border-parchment-200 text-slate-500 uppercase text-[10px]">
+                      <th class="py-2.5">Name</th>
+                      <th class="py-2.5">Role</th>
+                      <th class="py-2.5">Email</th>
+                      <th class="py-2.5 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rosterTableBody" class="divide-y divide-parchment-200"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBDESK 2: EDITOR DESK -->
+        <div id="subdesk-editor" class="subdesk-content hidden space-y-6">
+          <div class="clean-card p-6 rounded-2xl">
+            <h4 class="font-serif font-bold text-lg text-mustangNavy-900 pb-3 border-b border-parchment-200 mb-4">Chief Editor Manuscript Review Desk</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-parchment-200 text-slate-500 uppercase text-[10px]">
+                    <th class="py-3 px-2">Work & Author</th>
+                    <th class="py-3 px-2">Category</th>
+                    <th class="py-3 px-2">Review Status</th>
+                    <th class="py-3 px-2">Editor Notes</th>
+                    <th class="py-3 px-2 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="editorTableBody" class="divide-y divide-parchment-200"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBDESK 3: TREASURER -->
+        <div id="subdesk-treasurer" class="subdesk-content hidden space-y-6">
+          <div class="clean-card p-6 rounded-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-parchment-200 mb-4">
+              <h4 class="font-serif font-bold text-lg text-mustangNavy-900">Treasurer Official Ledger</h4>
+              <button onclick="openLogSaleModal()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-mustangGold-500 text-mustangNavy-950 hover:bg-mustangGold-400 shadow">+ Add Transaction</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-parchment-200 text-slate-500 uppercase text-[10px]">
+                    <th class="py-2.5 px-2">Date</th>
+                    <th class="py-2.5 px-2">Description</th>
+                    <th class="py-2.5 px-2">Recorded By</th>
+                    <th class="py-2.5 px-2 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="officerTreasuryLedgerBody" class="divide-y divide-parchment-200"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBDESK 4: HISTORIAN -->
+        <div id="subdesk-historian" class="subdesk-content hidden space-y-6">
+          <div class="clean-card p-6 rounded-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-parchment-200 mb-4">
+              <h4 class="font-serif font-bold text-lg text-mustangNavy-900">Historian Club Milestone Log</h4>
+              <button onclick="openHistorianMilestoneModal()" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-mustangNavy-900 text-mustangGold-400 shadow">+ Record Milestone</button>
+            </div>
+            <div id="historianLogFeed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- SUPABASE CONFIGURATION MODAL -->
+  <div id="modalConfig" class="fixed inset-0 bg-mustangNavy-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="clean-card rounded-2xl max-w-md w-full p-6 bg-white border border-parchment-300 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-parchment-200">
+        <h3 class="font-serif font-bold text-lg text-mustangNavy-900"><i class="fa-solid fa-database text-mustangGold-600 mr-1.5"></i> Supabase Cloud Config</h3>
+        <button onclick="closeConfigModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleSaveConfig(event)" class="mt-4 space-y-3.5 text-xs">
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Project URL *</label>
+          <input type="text" id="cfgUrl" required placeholder="https://your-project.supabase.co" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg font-mono">
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Anon / Public API Key *</label>
+          <input type="password" id="cfgKey" required placeholder="eyJhbGciOiJIUzI1NiIsIn..." class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg font-mono">
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-lg font-bold bg-mustangNavy-900 text-mustangGold-400 hover:bg-mustangNavy-800 shadow">
+          Connect to Supabase
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- AUTH LOGIN MODAL -->
+  <div id="modalLogin" class="fixed inset-0 bg-mustangNavy-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="clean-card rounded-2xl max-w-sm w-full p-6 bg-white border border-parchment-300 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-parchment-200">
+        <h3 class="font-serif font-bold text-lg text-mustangNavy-900">Mustang Club Sign In</h3>
+        <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleLoginSubmit(event)" class="mt-4 space-y-3.5 text-xs">
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Email or Student ID</label>
+          <input type="text" id="loginIdentifier" required placeholder="student@mustangs.edu" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">PIN</label>
+          <input type="password" id="loginPin" required placeholder="••••" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg font-mono text-center">
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-lg font-bold bg-mustangNavy-900 text-mustangGold-400 shadow">Sign In</button>
+        <div id="logoutOptionSection" class="hidden pt-3 border-t border-parchment-200 text-center">
+          <button type="button" onclick="handleLogout()" class="text-rose-600 hover:underline text-xs">Sign out of account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SPONSOR REGISTER MODAL -->
+  <div id="modalSponsorRegister" class="fixed inset-0 bg-mustangNavy-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="clean-card rounded-2xl max-w-md w-full p-6 bg-white border-2 border-mustangGold-500 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-parchment-200">
+        <h3 class="font-serif font-bold text-lg text-mustangNavy-900">Teacher Sponsor Registration</h3>
+        <button onclick="closeSponsorRegisterModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleSponsorRegistration(event)" class="mt-4 space-y-3.5 text-xs">
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Teacher Full Name *</label>
+          <input type="text" id="initSponsorName" required placeholder="e.g. Mrs. Eleanor Ward" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Faculty Email *</label>
+          <input type="email" id="initSponsorEmail" required placeholder="eward@mustangs.edu" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Master PIN (4-6 digits) *</label>
+          <input type="password" id="initSponsorPin" required placeholder="••••" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg font-mono text-center">
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-lg font-bold bg-mustangGold-500 text-mustangNavy-950 hover:bg-mustangGold-400 shadow">
+          Initialize Sponsor Account in Database
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- NEW ANNOUNCEMENT MODAL -->
+  <div id="modalNewAnnouncement" class="fixed inset-0 bg-mustangNavy-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="clean-card rounded-2xl max-w-lg w-full p-6 bg-white shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-parchment-200">
+        <h3 class="font-serif font-bold text-lg text-mustangNavy-900">Post Club Bulletin</h3>
+        <button onclick="closeNewAnnouncementModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handlePostAnnouncement(event)" class="mt-4 space-y-3 text-xs">
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Title *</label>
+          <input type="text" id="annTitle" required placeholder="Announcement headline" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Category *</label>
+            <select id="annCategory" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+              <option value="Anthology">Anthology Project</option>
+              <option value="Fundraiser">MegaCon Fundraiser</option>
+              <option value="Meeting">Meeting / Workshop</option>
+              <option value="Urgent">🚨 Urgent</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Date</label>
+            <input type="date" id="annDate" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+          </div>
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Content *</label>
+          <textarea id="annContent" required rows="4" placeholder="Announcement details..." class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg"></textarea>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeNewAnnouncementModal()" class="px-3 py-2 text-slate-600 bg-parchment-100 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 font-bold text-mustangGold-400 bg-mustangNavy-900 rounded-lg shadow">Publish to Cloud</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CALENDAR MODAL -->
+  <div id="modalNewEvent" class="fixed inset-0 bg-mustangNavy-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="clean-card rounded-2xl max-w-md w-full p-6 bg-white shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-parchment-200">
+        <h3 class="font-serif font-bold text-lg text-mustangNavy-900">Schedule Event</h3>
+        <button onclick="closeNewEventModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleCreateEvent(event)" class="mt-4 space-y-3 text-xs">
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Event Title *</label>
+          <input type="text" id="evTitle" required placeholder="Event description" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Date *</label>
+            <input type="date" id="evDate" required class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Time *</label>
+            <input type="text" id="evTime" required placeholder="3:30 - 4:45 PM" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Location *</label>
+            <input type="text" id="evLocation" required placeholder="Room 214" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Type *</label>
+            <select id="evType" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+              <option value="Meeting">Meeting</option>
+              <option value="Workshop">Workshop</option>
+              <option value="Deadline">Deadline</option>
+              <option value="Fundraiser">Fundraiser</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeNewEventModal()" class="px-3 py-2 text-slate-600 bg-parchment-100 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 font-bold text-mustangGold-400 bg-mustangNavy-900 rounded-lg shadow">Add to Cloud</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MEETING NOTES MODAL -->
+  <div id="modalNewNotes" class="fixed inset-0 bg-mustangNavy-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="clean-card rounded-2xl max-w-lg w-full p-6 bg-white shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-parchment-200">
+        <h3 class="font-serif font-bold text-lg text-mustangNavy-900">Record Meeting Minutes</h3>
+        <button onclick="closeNewNotesModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleSaveMeetingNotes(event)" class="mt-4 space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Meeting Date *</label>
+            <input type="date" id="noteDate" required class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Scribe *</label>
+            <input type="text" id="noteScribe" required placeholder="Scribe name" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+          </div>
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Headline Topic *</label>
+          <input type="text" id="noteTopic" required placeholder="Discussion focus" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Takeaways (One per line) *</label>
+          <textarea id="noteBullets" required rows="4" placeholder="- Action item 1&#10;- Decision 2" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg font-mono"></textarea>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeNewNotesModal()" class="px-3 py-2 text-slate-600 bg-parchment-100 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 font-bold text-mustangGold-400 bg-mustangNavy-900 rounded-lg shadow">Commit Minutes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- RECORD SALES MODAL -->
+  <div id="modalLogSale" class="fixed inset-0 bg-mustangNavy-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="clean-card rounded-2xl max-w-sm w-full p-6 bg-white shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-parchment-200">
+        <h3 class="font-serif font-bold text-base text-mustangNavy-900">Record Treasury Transaction</h3>
+        <button onclick="closeLogSaleModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleRecordLedgerEntry(event)" class="mt-4 space-y-3 text-xs">
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Description *</label>
+          <input type="text" id="saleDesc" required placeholder="e.g. 10 Anthologies Sold" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Amount ($ USD) *</label>
+          <input type="number" step="0.5" id="saleAmount" required placeholder="100.00" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg font-mono">
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Entry Type</label>
+          <select id="saleType" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+            <option value="Deposit">Deposit / Revenue (+)</option>
+            <option value="Expense">Printing Expense (-)</option>
+          </select>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeLogSaleModal()" class="px-3 py-2 text-slate-600 bg-parchment-100 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 font-bold text-mustangGold-400 bg-mustangNavy-900 rounded-lg shadow">Commit to Cloud</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- HISTORIAN MODAL (PROMPTS + ATTACHMENTS) -->
+  <div id="modalHistorianMilestone" class="fixed inset-0 bg-mustangNavy-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="clean-card rounded-2xl max-w-xl w-full p-6 bg-white shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-parchment-200">
+        <h3 class="font-serif font-bold text-lg text-mustangNavy-900">Record Club Milestone</h3>
+        <button onclick="closeHistorianMilestoneModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleSaveHistorianMilestone(event)" class="mt-4 space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Milestone Category *</label>
+            <select id="histCategory" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+              <option value="Anthology Milestone">Anthology Milestone</option>
+              <option value="Campus Fundraiser">Campus Fundraiser</option>
+              <option value="MegaCon Preparation">MegaCon Preparation</option>
+              <option value="Writing Workshop">Writing Workshop</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Date *</label>
+            <input type="date" id="histDate" required class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+          </div>
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Milestone Title *</label>
+          <input type="text" id="histTitle" required placeholder="e.g. Mini-Book Cover Design Voting Completed" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-800">1. Executive Summary & Outcomes *</label>
+          <textarea id="histSummary" required rows="2" placeholder="What occurred and what was accomplished?" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-800 mb-1">2. Key People Involved</label>
+            <input type="text" id="histPeople" placeholder="e.g. Editor, President, 12 Members" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-800 mb-1">3. Quantitative Impact</label>
+            <input type="text" id="histImpact" placeholder="e.g. 24 drafts, $320 raised" class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg">
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-800 mb-1">4. Anecdotes / Reflections</label>
+          <textarea id="histNotes" rows="2" placeholder="Quotes or reflections..." class="w-full p-2.5 bg-parchment-50 border border-parchment-300 rounded-lg"></textarea>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-800 mb-1">5. Attach File to Cloud Storage</label>
+          <input type="file" id="histFile" class="w-full text-slate-500 text-[11px]">
+        </div>
+        <div class="flex justify-end space-x-2 pt-2 border-t border-parchment-200">
+          <button type="button" onclick="closeHistorianMilestoneModal()" class="px-3 py-2 text-slate-600 bg-parchment-100 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 font-bold text-mustangGold-400 bg-mustangNavy-900 rounded-lg shadow">Commit Milestone</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- READ MANUSCRIPT MODAL -->
+  <div id="modalReadManuscript" class="fixed inset-0 bg-mustangNavy-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="clean-card rounded-2xl max-w-2xl w-full p-6 bg-white shadow-2xl max-h-[85vh] flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-3 border-b border-parchment-200">
+          <div>
+            <h3 id="readModalTitle" class="font-serif font-bold text-lg text-mustangNavy-900">Manuscript Title</h3>
+            <span id="readModalAuthor" class="text-xs text-slate-500">by Author</span>
+          </div>
+          <button onclick="closeReadManuscriptModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="mt-4 p-4 bg-parchment-50 rounded-xl border border-parchment-200 overflow-y-auto max-h-[50vh]">
+          <p id="readModalContent" class="text-xs sm:text-sm font-serif leading-relaxed text-slate-800 whitespace-pre-wrap"></p>
+        </div>
+      </div>
+      <div class="pt-4 border-t border-parchment-200 flex justify-between items-center">
+        <a id="readModalFileLink" href="#" target="_blank" class="hidden text-xs text-mustangGold-700 font-semibold underline">
+          <i class="fa-solid fa-download mr-1"></i> Download Cloud Attachment
+        </a>
+        <button onclick="closeReadManuscriptModal()" class="px-4 py-2 text-xs font-semibold bg-mustangNavy-900 text-mustangGold-400 rounded-lg">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastBox" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- ==============================================
+       CORE SUPABASE INTEGRATION & LOGIC
+  =============================================== -->
+  <script>
+    // HARDCODED SUPABASE KEYS (Or entered via settings modal)
+    let SUPABASE_URL = "https://duovnszctabxrftxoecw.supabase.co/";
+    let SUPABASE_KEY = "sb_publishable_zqNjNcbWV1OzxBbOLQ1CRw_OCwYqfqT";
+    let sbClient = null;
+
+    let CURRENT_USER = JSON.parse(localStorage.getItem('mustang_auth_user') || 'null');
+    let CACHE = {
+      users: [],
+      announcements: [],
+      calendarEvents: [],
+      meetingNotes: [],
+      drafts: [],
+      treasury: [],
+      messages: [],
+      milestones: [],
+      notifications: [],
+      goal: 3500
+    };
+
+    function initSupabase() {
+      if (SUPABASE_URL && SUPABASE_KEY) {
+        try {
+          sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+          document.getElementById('cloudStatusBadge').innerHTML = `
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span class="text-emerald-400">Cloud Live</span>
+          `;
+          fetchCloudData();
+          listenToRealtime();
+        } catch(e) {
+          console.error("Supabase init error:", e);
+        }
+      } else {
+        document.getElementById('cloudStatusBadge').innerHTML = `
+          <button onclick="openConfigModal()" class="text-amber-400 underline font-semibold flex items-center space-x-1">
+            <i class="fa-solid fa-plug"></i> <span>Connect Supabase</span>
+          </button>
+        `;
+      }
+    }
+
+    async function fetchCloudData() {
+      if (!sbClient) return;
+
+      const [profiles, ann, cal, notes, drafts, ledger, msgs, stones, notifs, settings] = await Promise.all([
+        sbClient.from('profiles').select('*'),
+        sbClient.from('announcements').select('*').order('created_at', { ascending: false }),
+        sbClient.from('calendar_events').select('*').order('date', { ascending: true }),
+        sbClient.from('meeting_notes').select('*').order('date', { ascending: false }),
+        sbClient.from('drafts').select('*').order('created_at', { ascending: false }),
+        sbClient.from('treasury_ledger').select('*').order('created_at', { ascending: false }),
+        sbClient.from('messages').select('*').order('created_at', { ascending: false }),
+        sbClient.from('milestones').select('*').order('created_at', { ascending: false }),
+        sbClient.from('notifications').select('*').order('created_at', { ascending: false }),
+        sbClient.from('club_settings').select('*')
+      ]);
+
+      CACHE.users = profiles.data || [];
+      CACHE.announcements = ann.data || [];
+      CACHE.calendarEvents = cal.data || [];
+      CACHE.meetingNotes = notes.data || [];
+      CACHE.drafts = drafts.data || [];
+      CACHE.treasury = ledger.data || [];
+      CACHE.messages = msgs.data || [];
+      CACHE.milestones = stones.data || [];
+      CACHE.notifications = notifs.data || [];
+
+      const goalSetting = (settings.data || []).find(s => s.key === 'trip_goal');
+      if (goalSetting && goalSetting.value) CACHE.goal = goalSetting.value.amount || 3500;
+
+      updateUI();
+    }
+
+    function listenToRealtime() {
+      if (!sbClient) return;
+      sbClient.channel('club-sync')
+        .on('postgres_changes', { event: '*', schema: 'public' }, () => {
+          fetchCloudData();
+        })
+        .subscribe();
+    }
+
+    function isLeadershipOrSponsor(u) {
+      if (!u) return false;
+      return ['Teacher Sponsor', 'President', 'Vice President', 'Editor', 'Treasurer', 'Historian'].includes(u.role);
+    }
+
+    function updateUI() {
+      // Sponsor Existence Check
+      const sponsor = CACHE.users.find(u => u.role === 'Teacher Sponsor');
+      const wizard = document.getElementById('initWizardContainer');
+      if (!sponsor) wizard.classList.remove('hidden');
+      else wizard.classList.add('hidden');
+
+      // Auth controls
+      const isLeader = isLeadershipOrSponsor(CURRENT_USER);
+      ['btnNewAnnouncement', 'btnNewCalendarEvent', 'btnNewMeetingNotes', 'btnLogSale', 'btnSetBudgetGoal'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', !isLeader);
+      });
+
+      const lockIcon = document.getElementById('boardroomLockIcon');
+      lockIcon.className = isLeader ? "fa-solid fa-unlock text-[11px] text-emerald-400" : "fa-solid fa-lock text-[11px] text-mustangGold-400";
+
+      if (CURRENT_USER) {
+        document.getElementById('authBtnLabel').innerText = "Switch";
+        document.getElementById('currentUserBadge').classList.remove('hidden');
+        document.getElementById('activeUserName').innerText = CURRENT_USER.name;
+        document.getElementById('activeUserRoleBadge').innerText = CURRENT_USER.role;
+        document.getElementById('logoutOptionSection').classList.remove('hidden');
+      } else {
+        document.getElementById('authBtnLabel').innerText = "Sign In";
+        document.getElementById('currentUserBadge').classList.add('hidden');
+        document.getElementById('logoutOptionSection').classList.add('hidden');
+      }
+
+      renderMetrics();
+      renderAnnouncements();
+      renderCalendar();
+      renderMeetingNotes();
+      renderDrafts();
+      renderTreasury();
+      renderMessages();
+      renderRoster();
+      renderHistorian();
+      renderNotifications();
+    }
+
+    // TAB NAVIGATION
+    function navigateTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        if (btn.getAttribute('data-tab') === tabId) {
+          btn.classList.add('text-mustangGold-400', 'font-semibold', 'bg-mustangNavy-800');
+          btn.classList.remove('text-slate-300');
+        } else if (btn.getAttribute('data-tab') !== 'boardroom') {
+          btn.classList.remove('text-mustangGold-400', 'font-semibold', 'bg-mustangNavy-800');
+          btn.classList.add('text-slate-300');
+        }
+      });
+
+      const target = document.getElementById(`tab-${tabId}`);
+      if (target) target.classList.remove('hidden');
+
+      if (tabId === 'boardroom') {
+        const isLeader = isLeadershipOrSponsor(CURRENT_USER);
+        document.getElementById('boardroomLockedView').classList.toggle('hidden', isLeader);
+        document.getElementById('boardroomUnlockedView').classList.toggle('hidden', !isLeader);
+      }
+
+      const mobileNav = document.getElementById('navLinks');
+      if (window.innerWidth < 768 && !mobileNav.classList.contains('hidden')) {
+        mobileNav.classList.add('hidden');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleMobileNav() {
+      document.getElementById('navLinks').classList.toggle('hidden');
+    }
+
+    // SUBDESK
+    function switchLeadershipSubDesk(desk) {
+      document.querySelectorAll('.subdesk-content').forEach(d => d.classList.add('hidden'));
+      document.querySelectorAll('.subdesk-btn').forEach(b => {
+        if (b.getAttribute('data-subdesk') === desk) {
+          b.className = "subdesk-btn px-3 py-1.5 rounded-lg bg-mustangGold-600 text-mustangNavy-950 font-bold";
+        } else {
+          b.className = "subdesk-btn px-3 py-1.5 rounded-lg bg-mustangNavy-800 text-slate-300";
+        }
+      });
+      const active = document.getElementById(`subdesk-${desk}`);
+      if (active) active.classList.remove('hidden');
+    }
+
+    // CONFIG MODAL
+    function openConfigModal() {
+      document.getElementById('cfgUrl').value = SUPABASE_URL;
+      document.getElementById('cfgKey').value = SUPABASE_KEY;
+      document.getElementById('modalConfig').classList.remove('hidden');
+    }
+    function closeConfigModal() {
+      document.getElementById('modalConfig').classList.add('hidden');
+    }
+    function handleSaveConfig(e) {
+      e.preventDefault();
+      SUPABASE_URL = document.getElementById('cfgUrl').value.trim();
+      SUPABASE_KEY = document.getElementById('cfgKey').value.trim();
+      localStorage.setItem('mustang_sb_url', SUPABASE_URL);
+      localStorage.setItem('mustang_sb_key', SUPABASE_KEY);
+      closeConfigModal();
+      initSupabase();
+      showToast("Supabase configuration saved!", "success");
+    }
+
+    // AUTH ACTIONS
+    function openLoginModal() { document.getElementById('modalLogin').classList.remove('hidden'); }
+    function closeLoginModal() { document.getElementById('modalLogin').classList.add('hidden'); }
+    
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('loginIdentifier').value.trim().toLowerCase();
+      const pin = document.getElementById('loginPin').value.trim();
+
+      const user = CACHE.users.find(u => (u.email.toLowerCase() === id || u.name.toLowerCase() === id) && u.pin === pin);
+      if (user) {
+        CURRENT_USER = user;
+        localStorage.setItem('mustang_auth_user', JSON.stringify(user));
+        closeLoginModal();
+        updateUI();
+        showToast(`Welcome back, ${user.name}!`, "success");
+        if (isLeadershipOrSponsor(user)) navigateTab('boardroom');
+      } else {
+        showToast("Invalid credentials. Please verify your Email/PIN.", "error");
+      }
+    }
+
+    function handleLogout() {
+      CURRENT_USER = null;
+      localStorage.removeItem('mustang_auth_user');
+      closeLoginModal();
+      updateUI();
+      navigateTab('announcements');
+      showToast("Logged out.");
+    }
+
+    function openSponsorRegisterModal() { document.getElementById('modalSponsorRegister').classList.remove('hidden'); }
+    function closeSponsorRegisterModal() { document.getElementById('modalSponsorRegister').classList.add('hidden'); }
+
+    async function handleSponsorRegistration(e) {
+      e.preventDefault();
+      if (!sbClient) return showToast("Connect to Supabase first!", "error");
+
+      const name = document.getElementById('initSponsorName').value.trim();
+      const email = document.getElementById('initSponsorEmail').value.trim();
+      const pin = document.getElementById('initSponsorPin').value.trim();
+
+      const { data, error } = await sbClient.from('profiles').insert([{
+        name,
+        email,
+        role: 'Teacher Sponsor',
+        pin
+      }]).select();
+
+      if (error) return showToast(error.message, "error");
+
+      CURRENT_USER = data[0];
+      localStorage.setItem('mustang_auth_user', JSON.stringify(CURRENT_USER));
+      closeSponsorRegisterModal();
+      fetchCloudData();
+      showToast("Teacher Sponsor established in cloud!", "success");
+      navigateTab('boardroom');
+    }
+
+    // ACCOUNT CREATION (LEADERSHIP)
+    async function handleCreateAccount(e) {
+      e.preventDefault();
+      if (!sbClient) return showToast("No Supabase connection.", "error");
+
+      const name = document.getElementById('newAccName').value.trim();
+      const email = document.getElementById('newAccEmail').value.trim();
+      const role = document.getElementById('newAccRole').value;
+      const pin = document.getElementById('newAccPin').value.trim();
+
+      const { error } = await sbClient.from('profiles').insert([{ name, email, role, pin }]);
+      if (error) return showToast(error.message, "error");
+
+      showToast(`Account created for ${name} (${role})`, "success");
+      e.target.reset();
+      fetchCloudData();
+    }
+
+    async function deleteAccount(id) {
+      if (!confirm("Remove account?")) return;
+      await sbClient.from('profiles').delete().eq('id', id);
+      fetchCloudData();
+      showToast("Account removed.");
+    }
+
+    // DRAFT SUBMISSION & REVIEW
+    async function handleDraftSubmission(e) {
+      e.preventDefault();
+      if (!sbClient) return showToast("Supabase not connected", "error");
+
+      const author = document.getElementById('draftAuthor').value.trim();
+      const title = document.getElementById('draftTitle').value.trim();
+      const category = document.getElementById('draftCategory').value;
+      const word_count = parseInt(document.getElementById('draftWordCount').value) || 0;
+      const synopsis = document.getElementById('draftSynopsis').value.trim();
+      const content = document.getElementById('draftContent').value.trim();
+      const fileInput = document.getElementById('draftFile');
+
+      let file_url = null;
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const path = `manuscripts/${Date.now()}_${file.name}`;
+        const { error: uploadErr } = await sbClient.storage.from('mustang-vault').upload(path, file);
+        if (!uploadErr) {
+          const { data } = sbClient.storage.from('mustang-vault').getPublicUrl(path);
+          file_url = data.publicUrl;
+        }
+      }
+
+      const { error } = await sbClient.from('drafts').insert([{
+        author,
+        title,
+        category,
+        word_count,
+        synopsis,
+        content,
+        file_url,
+        status: 'Submitted'
+      }]);
+
+      if (error) return showToast(error.message, "error");
+
+      await sbClient.from('notifications').insert([{
+        title: "Submission Confirmed",
+        message: `Your draft "${title}" was synced to the Chief Editor queue.`,
+        type: "success"
+      }]);
+
+      showToast("Manuscript synced to Supabase!", "success");
+      e.target.reset();
+      fetchCloudData();
+    }
+
+    async function updateDraftStatus(id, status) {
+      await sbClient.from('drafts').update({ status }).eq('id', id);
+      showToast(`Status updated to ${status}`);
+      fetchCloudData();
+    }
+
+    async function updateDraftFeedback(id, editor_feedback) {
+      await sbClient.from('drafts').update({ editor_feedback }).eq('id', id);
+      showToast("Line notes committed.");
+    }
+
+    async function returnDraftWithFeedback(id) {
+      const d = CACHE.drafts.find(item => item.id === id);
+      if (!d) return;
+
+      const input = document.getElementById(`feedbackInput_${id}`);
+      const notes = input ? input.value : d.editor_feedback;
+
+      await Promise.all([
+        sbClient.from('drafts').update({ status: 'Revision Needed', editor_feedback: notes }).eq('id', id),
+        sbClient.from('messages').insert([{
+          sender: CURRENT_USER ? `${CURRENT_USER.name} (Editor Desk)` : 'Chief Editor',
+          recipient: d.author,
+          draft_title: d.title,
+          body: `Draft returned with editorial notes: "${notes}". Please revise and resubmit.`
+        }]),
+        sbClient.from('notifications').insert([{
+          title: "Draft Returned",
+          message: `"${d.title}" returned for revision to author ${d.author}.`,
+          type: "return"
+        }])
+      ]);
+
+      showToast(`Returned "${d.title}" to ${d.author}`, "info");
+      fetchCloudData();
+    }
+
+    function viewManuscriptText(id) {
+      const d = CACHE.drafts.find(item => item.id === id);
+      if (!d) return;
+
+      document.getElementById('readModalTitle').innerText = d.title;
+      document.getElementById('readModalAuthor').innerText = `by ${d.author} • ${d.category} (${d.word_count || 0} words)`;
+      document.getElementById('readModalContent').innerText = d.content;
+
+      const link = document.getElementById('readModalFileLink');
+      if (d.file_url) {
+        link.href = d.file_url;
+        link.classList.remove('hidden');
+      } else {
+        link.classList.add('hidden');
+      }
+
+      document.getElementById('modalReadManuscript').classList.remove('hidden');
+    }
+    function closeReadManuscriptModal() { document.getElementById('modalReadManuscript').classList.add('hidden'); }
+
+    // MESSAGING
+    async function handleSendMessage(e) {
+      e.preventDefault();
+      if (!sbClient) return showToast("Supabase not connected", "error");
+
+      const draft_title = document.getElementById('msgDraftSelect').value;
+      const recipient = document.getElementById('msgRecipient').value;
+      const body = document.getElementById('msgBody').value.trim();
+
+      const { error } = await sbClient.from('messages').insert([{
+        sender: CURRENT_USER ? `${CURRENT_USER.name} (${CURRENT_USER.role})` : 'Club Member',
+        recipient,
+        draft_title,
+        body
+      }]);
+
+      if (error) return showToast(error.message, "error");
+      showToast("Message broadcasted to cloud!", "success");
+      e.target.reset();
+      fetchCloudData();
+    }
+
+    // HISTORIAN MILESTONES
+    function openHistorianMilestoneModal() {
+      document.getElementById('histDate').valueAsDate = new Date();
+      document.getElementById('modalHistorianMilestone').classList.remove('hidden');
+    }
+    function closeHistorianMilestoneModal() { document.getElementById('modalHistorianMilestone').classList.add('hidden'); }
+
+    async function handleSaveHistorianMilestone(e) {
+      e.preventDefault();
+      if (!sbClient) return showToast("Supabase not connected", "error");
+
+      const category = document.getElementById('histCategory').value;
+      const date = document.getElementById('histDate').value;
+      const title = document.getElementById('histTitle').value.trim();
+      const summary = document.getElementById('histSummary').value.trim();
+      const people = document.getElementById('histPeople').value.trim() || 'Club delegation';
+      const impact = document.getElementById('histImpact').value.trim() || 'N/A';
+      const notes = document.getElementById('histNotes').value.trim();
+      const fileInput = document.getElementById('histFile');
+
+      let files = [];
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const path = `milestones/${Date.now()}_${file.name}`;
+        const { error: uploadErr } = await sbClient.storage.from('mustang-vault').upload(path, file);
+        if (!uploadErr) {
+          const { data } = sbClient.storage.from('mustang-vault').getPublicUrl(path);
+          files.push({ name: file.name, url: data.publicUrl });
+        }
+      }
+
+      await sbClient.from('milestones').insert([{
+        category,
+        date,
+        title,
+        summary,
+        people,
+        impact,
+        notes,
+        files,
+        recorded_by: CURRENT_USER ? CURRENT_USER.name : 'Historian'
+      }]);
+
+      showToast("Milestone recorded in cloud archive!", "success");
+      closeHistorianMilestoneModal();
+      e.target.reset();
+      fetchCloudData();
+    }
+
+    // TREASURY TRANSACTIONS
+    function openLogSaleModal() { document.getElementById('modalLogSale').classList.remove('hidden'); }
+    function closeLogSaleModal() { document.getElementById('modalLogSale').classList.add('hidden'); }
+
+    async function handleRecordLedgerEntry(e) {
+      e.preventDefault();
+      if (!sbClient) return showToast("Supabase not connected", "error");
+
+      const description = document.getElementById('saleDesc').value.trim();
+      const raw = parseFloat(document.getElementById('saleAmount').value) || 0;
+      const type = document.getElementById('saleType').value;
+      const amount = (type === 'Expense') ? -Math.abs(raw) : Math.abs(raw);
+
+      await sbClient.from('treasury_ledger').insert([{
+        date: new Date().toLocaleDateString(),
+        description,
+        recorded_by: CURRENT_USER ? CURRENT_USER.name : 'Treasurer',
+        amount,
+        type
+      }]);
+
+      showToast("Ledger transaction synced!", "success");
+      closeLogSaleModal();
+      e.target.reset();
+      fetchCloudData();
+    }
+
+    async function promptSetTripGoal() {
+      const g = prompt("Enter new MegaCon budget goal ($ USD):", CACHE.goal);
+      if (!g || isNaN(g)) return;
+      await sbClient.from('club_settings').upsert({ key: 'trip_goal', value: { amount: parseFloat(g) } });
+      fetchCloudData();
+      showToast("Trip goal updated.");
+    }
+
+    // ANNOUNCEMENTS
+    function openNewAnnouncementModal() {
+      document.getElementById('annDate').valueAsDate = new Date();
+      document.getElementById('modalNewAnnouncement').classList.remove('hidden');
+    }
+    function closeNewAnnouncementModal() { document.getElementById('modalNewAnnouncement').classList.add('hidden'); }
+
+    async function handlePostAnnouncement(e) {
+      e.preventDefault();
+      const title = document.getElementById('annTitle').value.trim();
+      const category = document.getElementById('annCategory').value;
+      const date = document.getElementById('annDate').value || new Date().toLocaleDateString();
+      const content = document.getElementById('annContent').value.trim();
+
+      await sbClient.from('announcements').insert([{
+        title,
+        category,
+        date,
+        content,
+        author: CURRENT_USER ? `${CURRENT_USER.name} (${CURRENT_USER.role})` : 'Leadership'
+      }]);
+
+      showToast("Bulletin published!");
+      closeNewAnnouncementModal();
+      e.target.reset();
+      fetchCloudData();
+    }
+
+    // CALENDAR EVENTS
+    function openNewEventModal() { document.getElementById('modalNewEvent').classList.remove('hidden'); }
+    function closeNewEventModal() { document.getElementById('modalNewEvent').classList.add('hidden'); }
+
+    async function handleCreateEvent(e) {
+      e.preventDefault();
+      const title = document.getElementById('evTitle').value.trim();
+      const date = document.getElementById('evDate').value;
+      const time = document.getElementById('evTime').value.trim();
+      const location = document.getElementById('evLocation').value.trim();
+      const type = document.getElementById('evType').value;
+
+      await sbClient.from('calendar_events').insert([{ title, date, time, location, type }]);
+      showToast("Event scheduled!");
+      closeNewEventModal();
+      e.target.reset();
+      fetchCloudData();
+    }
+
+    // MEETING MINUTES
+    function openNewNotesModal() {
+      document.getElementById('noteDate').valueAsDate = new Date();
+      document.getElementById('modalNewNotes').classList.remove('hidden');
+    }
+    function closeNewNotesModal() { document.getElementById('modalNewNotes').classList.add('hidden'); }
+
+    async function handleSaveMeetingNotes(e) {
+      e.preventDefault();
+      const date = document.getElementById('noteDate').value;
+      const scribe = document.getElementById('noteScribe').value.trim();
+      const topic = document.getElementById('noteTopic').value.trim();
+      const bullets = document.getElementById('noteBullets').value.trim().split('\n').filter(b => b.trim().length > 0);
+
+      await sbClient.from('meeting_notes').insert([{ date, scribe, topic, bullets }]);
+      showToast("Meeting minutes recorded!");
+      closeNewNotesModal();
+      e.target.reset();
+      fetchCloudData();
+    }
+
+    // NOTIFICATIONS PANEL
+    function toggleNotificationPanel() {
+      document.getElementById('notificationDropdown').classList.toggle('hidden');
+    }
+    async function clearNotifications() {
+      await sbClient.from('notifications').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      fetchCloudData();
+    }
+
+    // RENDERING FUNCTIONS
+    function renderMetrics() {
+      document.getElementById('statMembersCount').innerText = CACHE.users.length;
+      document.getElementById('statOfficersRatio').innerText = `${CACHE.users.filter(u => u.role !== 'Member').length} in Leadership`;
+      document.getElementById('statDraftsCount').innerText = CACHE.drafts.length;
+      document.getElementById('statApprovedCount').innerText = `${CACHE.drafts.filter(d => d.status === 'Approved for Mini-Book').length} Approved for Print`;
+
+      const total = CACHE.treasury.reduce((acc, c) => acc + parseFloat(c.amount), 0);
+      document.getElementById('statRaisedAmt').innerText = `$${total.toFixed(0)}`;
+      document.getElementById('statGoalSubtext').innerText = `Goal: $${CACHE.goal.toLocaleString()}`;
+      document.getElementById('topBarTreasury').innerText = `$${total.toFixed(0)} / $${CACHE.goal.toLocaleString()}`;
+
+      const upcoming = CACHE.calendarEvents.find(e => new Date(e.date) >= new Date().setHours(0,0,0,0));
+      if (upcoming) {
+        document.getElementById('statNextMeetingDate').innerText = upcoming.title;
+        document.getElementById('statNextMeetingRoom').innerText = `${upcoming.date} • ${upcoming.location}`;
+      }
+    }
+
+    function renderAnnouncements() {
+      const container = document.getElementById('announcementsList');
+      if (CACHE.announcements.length === 0) {
+        container.innerHTML = `<div class="clean-card p-8 text-center text-slate-400 text-xs">No dispatches posted yet.</div>`;
+        return;
+      }
+      container.innerHTML = CACHE.announcements.map(a => `
+        <article class="clean-card p-4 sm:p-5 rounded-xl">
+          <div class="flex items-center justify-between text-xs mb-1.5">
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-mustangGold-100 text-mustangNavy-900">${a.category}</span>
+            <span class="text-slate-400 font-mono">${a.date}</span>
+          </div>
+          <h3 class="font-serif font-bold text-base text-mustangNavy-900">${a.title}</h3>
+          <p class="text-xs text-slate-700 mt-1 whitespace-pre-wrap">${a.content}</p>
+        </article>
+      `).join('');
+    }
+
+    function renderCalendar() {
+      const container = document.getElementById('calendarEventsList');
+      if (CACHE.calendarEvents.length === 0) {
+        container.innerHTML = `<div class="clean-card p-8 text-center text-slate-400 text-xs">No meetings scheduled.</div>`;
+        return;
+      }
+      container.innerHTML = CACHE.calendarEvents.map(e => `
+        <div class="clean-card p-4 rounded-xl flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="text-center px-3 py-1 bg-mustangNavy-900 text-mustangGold-400 rounded font-mono text-xs font-bold">
+              ${e.date}
+            </div>
+            <div>
+              <h4 class="font-serif font-bold text-sm text-mustangNavy-900">${e.title}</h4>
+              <span class="text-[11px] text-slate-500 font-mono">${e.time} • ${e.location} (${e.type})</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderMeetingNotes() {
+      const container = document.getElementById('meetingNotesContainer');
+      if (CACHE.meetingNotes.length === 0) {
+        container.innerHTML = `<div class="col-span-full clean-card p-8 text-center text-slate-400 text-xs">No notes archived.</div>`;
+        return;
+      }
+      container.innerHTML = CACHE.meetingNotes.map(n => `
+        <div class="clean-card p-5 rounded-xl">
+          <div class="flex justify-between text-xs font-mono text-mustangGold-700 mb-1">
+            <span>${n.date}</span>
+            <span class="text-slate-400">${n.scribe}</span>
+          </div>
+          <h4 class="font-serif font-bold text-base text-mustangNavy-900 mb-2">${n.topic}</h4>
+          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1">
+            ${(n.bullets || []).map(b => `<li>${b}</li>`).join('')}
+          </ul>
+        </div>
+      `).join('');
+    }
+
+    function renderDrafts() {
+      const feed = document.getElementById('studentDraftsFeed');
+      const badge = document.getElementById('draftCountBadge');
+      badge.innerText = CACHE.drafts.length;
+      badge.classList.toggle('hidden', CACHE.drafts.length === 0);
+      document.getElementById('queueCountIndicator').innerText = `${CACHE.drafts.length} works submitted`;
+
+      const msgSelect = document.getElementById('msgDraftSelect');
+      if (msgSelect) {
+        msgSelect.innerHTML = `<option value="General">General Inquiry</option>` + CACHE.drafts.map(d => `<option value="${d.title}">${d.title}</option>`).join('');
+      }
+
+      if (CACHE.drafts.length === 0) {
+        feed.innerHTML = `<div class="clean-card p-8 text-center text-slate-400 text-xs">No manuscripts in cloud queue.</div>`;
+        return;
+      }
+
+      feed.innerHTML = CACHE.drafts.map(d => `
+        <div class="clean-card p-4 sm:p-5 rounded-xl space-y-3">
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-serif font-bold text-base text-mustangNavy-900">${d.title}</h4>
+              <span class="text-xs text-slate-500">by <strong>${d.author}</strong> • ${d.category} (${d.word_count || 0} words)</span>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[11px] font-bold ${d.status === 'Approved for Mini-Book' ? 'bg-emerald-100 text-emerald-800' : d.status === 'Revision Needed' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}">${d.status}</span>
+          </div>
+          <div class="p-3 bg-parchment-50 rounded text-xs border border-parchment-200">
+            <strong>Editor Feedback:</strong> <span class="italic text-slate-600">${d.editor_feedback}</span>
+          </div>
+          <div class="flex justify-end">
+            <button onclick="viewManuscriptText('${d.id}')" class="px-3 py-1 bg-mustangNavy-900 text-mustangGold-400 rounded text-xs">Read Manuscript</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderTreasury() {
+      const tbody = document.getElementById('treasuryLedgerBody');
+      const tbodyOfficer = document.getElementById('officerTreasuryLedgerBody');
+
+      const total = CACHE.treasury.reduce((acc, c) => acc + parseFloat(c.amount), 0);
+      const pct = CACHE.goal > 0 ? Math.min(100, Math.round((total / CACHE.goal) * 100)) : 0;
+      document.getElementById('fundProgressPct').innerText = `${pct}%`;
+      document.getElementById('fundProgressBar').style.width = `${pct}%`;
+      document.getElementById('fundRaisedDetail').innerText = `$${total.toFixed(2)} raised`;
+      document.getElementById('fundGoalDetail').innerText = `Goal: $${CACHE.goal.toFixed(2)}`;
+
+      const html = CACHE.treasury.map(tx => {
+        const isPos = tx.amount >= 0;
+        return `
+          <tr class="hover:bg-parchment-50">
+            <td class="py-2 font-mono text-slate-500">${tx.date}</td>
+            <td class="py-2">${tx.description}</td>
+            <td class="py-2 text-right font-mono font-bold ${isPos ? 'text-emerald-600' : 'text-rose-600'}">
+              ${isPos ? '+' : ''}$${parseFloat(tx.amount).toFixed(2)}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.innerHTML = html;
+      tbodyOfficer.innerHTML = html;
+      runFundraiserCalc();
+    }
+
+    function runFundraiserCalc() {
+      const retail = parseFloat(document.getElementById('calcRetailInput').value) || 12;
+      const cost = parseFloat(document.getElementById('calcCostInput').value) || 4;
+      document.getElementById('calcRetailDisplay').innerText = `$${retail.toFixed(2)}`;
+      document.getElementById('calcCostDisplay').innerText = `$${cost.toFixed(2)}`;
+
+      const margin = Math.max(0.5, retail - cost);
+      document.getElementById('calcMarginOutput').innerText = `$${margin.toFixed(2)}`;
+
+      const totalRaised = CACHE.treasury.reduce((acc, c) => acc + parseFloat(c.amount), 0);
+      const needed = Math.max(0, CACHE.goal - totalRaised);
+      const books = Math.ceil(needed / margin);
+      document.getElementById('calcBooksNeededOutput').innerText = `${books} mini-books`;
+
+      const members = Math.max(1, CACHE.users.length);
+      document.getElementById('calcIndividualTarget').innerText = `${Math.ceil(books / members)} copies / member`;
+    }
+
+    function renderMessages() {
+      const feed = document.getElementById('messagesFeed');
+      document.getElementById('msgCountLabel').innerText = `${CACHE.messages.length} communications`;
+      if (CACHE.messages.length === 0) {
+        feed.innerHTML = `<div class="clean-card p-8 text-center text-slate-400 text-xs">No active editorial threads.</div>`;
+        return;
+      }
+      feed.innerHTML = CACHE.messages.map(m => `
+        <div class="clean-card p-4 rounded-xl border-l-4 border-l-mustangGold-500 text-xs">
+          <div class="flex justify-between items-center mb-1">
+            <strong>${m.sender} &rarr; ${m.recipient}</strong>
+            <span class="text-[10px] font-mono text-slate-400">${m.draft_title}</span>
+          </div>
+          <p class="text-slate-700 whitespace-pre-wrap">${m.body}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderRoster() {
+      const tbody = document.getElementById('rosterTableBody');
+      document.getElementById('rosterCountLabel').innerText = `${CACHE.users.length} enrolled`;
+      tbody.innerHTML = CACHE.users.map(u => `
+        <tr class="hover:bg-parchment-50">
+          <td class="py-2.5 font-medium">${u.name}</td>
+          <td class="py-2.5"><span class="px-2 py-0.5 rounded text-[10px] bg-parchment-200 font-bold">${u.role}</span></td>
+          <td class="py-2.5 font-mono text-slate-500">${u.email}</td>
+          <td class="py-2.5 text-right">
+            ${u.role !== 'Teacher Sponsor' ? `<button onclick="deleteAccount('${u.id}')" class="text-rose-500"><i class="fa-solid fa-trash"></i></button>` : 'Master'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderHistorian() {
+      const feed = document.getElementById('historianLogFeed');
+      if (CACHE.milestones.length === 0) {
+        feed.innerHTML = `<div class="col-span-full clean-card p-8 text-center text-slate-400 text-xs">No milestones recorded.</div>`;
+        return;
+      }
+      feed.innerHTML = CACHE.milestones.map(m => `
+        <div class="clean-card p-4 rounded-xl bg-parchment-50 text-xs space-y-2">
+          <div class="flex justify-between font-mono text-[10px] text-slate-500">
+            <span class="font-bold text-mustangNavy-900">${m.category}</span>
+            <span>${m.date}</span>
+          </div>
+          <h5 class="font-serif font-bold text-sm text-mustangNavy-900">${m.title}</h5>
+          <p class="text-slate-700">${m.summary}</p>
+          <div class="p-2 bg-white rounded border border-parchment-200 text-[11px]">
+            <div><strong>Leaders:</strong> ${m.people}</div>
+            <div><strong>Impact:</strong> ${m.impact}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderNotifications() {
+      const list = document.getElementById('notificationList');
+      const badge = document.getElementById('notifUnreadBadge');
+      badge.innerText = CACHE.notifications.length;
+      badge.classList.toggle('hidden', CACHE.notifications.length === 0);
+      list.innerHTML = CACHE.notifications.map(n => `
+        <div class="p-3 hover:bg-parchment-50 flex items-start space-x-2">
+          <div class="flex-1">
+            <div class="font-bold text-slate-800">${n.title}</div>
+            <div class="text-slate-600 text-[11px] mt-0.5">${n.message}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // WRITER'S STUDIO PROMPTS
+    const PROMPTS = [
+      { title: "The Midnight Bookshop Behind the Gymnasium", body: "Every Friday after stadium lights dim, a spiral door opens beneath the home bleachers leading to a reading parlor where characters from unfinished student stories gather." },
+      { title: "The Antiquarian of Forgotten Signals", body: "In an abandoned hotel near MegaCon, someone discovers a CRT television that only broadcasts interviews with characters after their authors close their laptops." },
+      { title: "The Origami Courier", body: "A student folds rough draft rejection letters into mechanical birds that deliver secret messages across the cafeteria." }
+    ];
+    function generateRandomPrompt() {
+      const p = PROMPTS[Math.floor(Math.random() * PROMPTS.length)];
+      document.getElementById('toolPromptTitle').innerText = `"${p.title}"`;
+      document.getElementById('toolPromptBody').innerText = `"${p.body}"`;
+    }
+    function updateScratchCount() {
+      const txt = document.getElementById('studioScratchpad').value.trim();
+      document.getElementById('scratchWords').innerText = `${txt.length ? txt.split(/\s+/).length : 0} words`;
+    }
+    function transferScratchToSubmit() {
+      document.getElementById('draftContent').value = document.getElementById('studioScratchpad').value;
+      navigateTab('submissions');
+    }
+
+    // TOAST NOTIFICATIONS
+    function showToast(msg, type = "info") {
+      const box = document.getElementById('toastBox');
+      const t = document.createElement('div');
+      t.className = `p-3 rounded-xl border shadow-xl flex items-center space-x-2 text-xs transition pointer-events-auto ${type === 'success' ? 'bg-emerald-950 text-white border-emerald-600' : type === 'error' ? 'bg-rose-950 text-white border-rose-600' : 'bg-mustangNavy-900 text-white border-slate-700'}`;
+      t.innerHTML = `<span>${msg}</span>`;
+      box.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3500);
+    }
+
+    window.onload = function() {
+      initSupabase();
+      updateUI();
+    };
+  </script>
+</body>
+</html>
